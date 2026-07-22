@@ -19,7 +19,7 @@ export async function GET(request: Request) {
 
     if (search) {
       conditions.push(
-        sql`(${employees.firstName} ILIKE ${"%" + search + "%"} OR ${employees.lastName} ILIKE ${"%" + search + "%"} OR ${employees.email} ILIKE ${"%" + search + "%"})`
+        sql`(${employees.firstName} LIKE ${"%" + search + "%"} OR ${employees.lastName} LIKE ${"%" + search + "%"} OR ${employees.email} LIKE ${"%" + search + "%"})`
       );
     }
     if (department) {

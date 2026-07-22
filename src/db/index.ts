@@ -1,25 +1,22 @@
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
+import { drizzle } from "drizzle-orm/libsql";
+import { createClient } from "@libsql/client";
 import * as schema from "./schema";
+import path from "path";
+import fs from "fs";
 
-const databaseUrl = process.env.DATABASE_URL;
+const DB_PATH = path.join(process.cwd(), "data", "hesabresi.db");
 
-if (!databaseUrl) {
-  throw new Error("DATABASE_URL is required");
+function ensureDir() {
+  const dir = path.dirname(DB_PATH);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
 }
 
-const globalForDb = globalThis as typeof globalThis & {
-  __arenaNextJsPostgresqlPool?: Pool;
-};
+ensureDir();
 
-export const pool =
-  globalForDb.__arenaNextJsPostgresqlPool ??
-  new Pool({
-    connectionString: databaseUrl,
-  });
+const client = createClient({
+  url: `file:${DB_PATH}`,
+});
 
-if (process.env.NODE_ENV !== "production") {
-  globalForDb.__arenaNextJsPostgresqlPool = pool;
-}
-
-export const db = drizzle(pool, { schema });
+export const db = drizzle(client, { schema });

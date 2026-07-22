@@ -1,6 +1,6 @@
 /**
  * Database Seed Script
- * Seeds initial data for the Financial Management Platform
+ * Seeds initial data for the Financial Management Platform (SQLite)
  */
 import { db } from "./index";
 import {
@@ -14,11 +14,11 @@ import {
   salaryPayments,
   bonuses,
 } from "./schema";
-import { sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 
 async function seed() {
-  console.log("🌱 Seeding database...");
+  console.log("Seeding database...");
 
   // Seed Roles
   const roleData = [
@@ -68,19 +68,19 @@ async function seed() {
   ];
 
   for (const r of roleData) {
-    await db
-      .insert(roles)
-      .values(r)
-      .onConflictDoNothing({ target: roles.name });
+    const existing = await db.select().from(roles).where(eq(roles.name, r.name)).limit(1);
+    if (existing.length === 0) {
+      await db.insert(roles).values(r);
+    }
   }
-  console.log("✅ Roles seeded");
+  console.log("Roles seeded");
 
   // Seed Admin User
   const hashedPassword = await bcrypt.hash("admin123", 10);
   const existingAdmin = await db
     .select()
     .from(users)
-    .where(sql`${users.email} = 'admin@company.ir'`)
+    .where(eq(users.email, "admin@company.ir"))
     .limit(1);
 
   if (existingAdmin.length === 0) {
@@ -97,7 +97,7 @@ async function seed() {
   const existingAccountant = await db
     .select()
     .from(users)
-    .where(sql`${users.email} = 'accountant@company.ir'`)
+    .where(eq(users.email, "accountant@company.ir"))
     .limit(1);
 
   if (existingAccountant.length === 0) {
@@ -109,7 +109,7 @@ async function seed() {
       isActive: true,
     });
   }
-  console.log("✅ Users seeded");
+  console.log("Users seeded");
 
   // Seed Categories
   const categoryData = [
@@ -132,13 +132,13 @@ async function seed() {
     { name: "سایر درآمدها", type: "income", icon: "📊", color: "#94a3b8" },
   ];
 
-  for (const c of categoryData) {
-    await db
-      .insert(categories)
-      .values(c)
-      .onConflictDoNothing();
+  const existingCategories = await db.select().from(categories).limit(1);
+  if (existingCategories.length === 0) {
+    for (const c of categoryData) {
+      await db.insert(categories).values(c);
+    }
   }
-  console.log("✅ Categories seeded");
+  console.log("Categories seeded");
 
   // Seed Settings
   const settingsData = [
@@ -151,12 +151,12 @@ async function seed() {
   ];
 
   for (const s of settingsData) {
-    await db
-      .insert(settings)
-      .values(s)
-      .onConflictDoNothing({ target: settings.key });
+    const existing = await db.select().from(settings).where(eq(settings.key, s.key)).limit(1);
+    if (existing.length === 0) {
+      await db.insert(settings).values(s);
+    }
   }
-  console.log("✅ Settings seeded");
+  console.log("Settings seeded");
 
   // Seed Employees
   const existingEmployees = await db.select().from(employees).limit(1);
@@ -228,7 +228,7 @@ async function seed() {
       await db.insert(employees).values(emp);
     }
   }
-  console.log("✅ Employees seeded");
+  console.log("Employees seeded");
 
   // Seed Income
   const existingIncome = await db.select().from(income).limit(1);
@@ -254,7 +254,7 @@ async function seed() {
       });
     }
   }
-  console.log("✅ Income seeded");
+  console.log("Income seeded");
 
   // Seed Expenses
   const existingExpenses = await db.select().from(expenses).limit(1);
@@ -280,7 +280,7 @@ async function seed() {
       });
     }
   }
-  console.log("✅ Expenses seeded");
+  console.log("Expenses seeded");
 
   // Seed Salary Payments
   const existingSalary = await db.select().from(salaryPayments).limit(1);
@@ -308,7 +308,7 @@ async function seed() {
       });
     }
   }
-  console.log("✅ Salary payments seeded");
+  console.log("Salary payments seeded");
 
   // Seed Bonuses
   const existingBonuses = await db.select().from(bonuses).limit(1);
@@ -319,9 +319,9 @@ async function seed() {
       { employeeId: 5, amount: 10000000, reason: "اتمام پروژه", date: "2024-04-01", description: "پاداش تکمیل پروژه" },
     ]);
   }
-  console.log("✅ Bonuses seeded");
+  console.log("Bonuses seeded");
 
-  console.log("🎉 Database seeded successfully!");
+  console.log("Database seeded successfully!");
   process.exit(0);
 }
 
