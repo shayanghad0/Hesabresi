@@ -25,6 +25,7 @@ html {
   direction: rtl;
 }
 
+/* custom scrollbar – dark aware */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -35,10 +36,30 @@ html {
   background: #cbd5e1;
   border-radius: 3px;
 }
+.dark ::-webkit-scrollbar-thumb {
+  background: #475569;
+}
 
-input, textarea, select {
+/* inputs, textareas, selects – dark mode */
+input,
+textarea,
+select {
   direction: rtl;
   text-align: right;
+  background-color: #f9fafb;
+  color: #111827;
+  border-color: #e5e7eb;
+}
+.dark input,
+.dark textarea,
+.dark select {
+  background-color: #1f2937;
+  color: #f9fafb;
+  border-color: #374151;
+}
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #9ca3af;
 }
 
 input[type="number"] {
