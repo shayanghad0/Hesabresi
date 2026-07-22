@@ -1,237 +1,153 @@
-# Project Overview
+You are a senior software architect and full-stack engineer.
 
-Build a modern, enterprise-grade Financial Management Platform for a company. The application will be used internally by accountants, finance managers, HR, and administrators to manage all company income, expenses, salaries, bonuses, and financial reports.
+Build a complete enterprise Financial Management Platform for a company.
 
-The application language (UI) must be **Persian (Farsi / RTL)** while the source code, variables, comments, API endpoints, and database schema must be written in English.
-
-This project should be designed with scalability, maintainability, and security in mind.
-
----
-
-# Tech Stack
+## Technology Stack (DO NOT CHANGE)
 
 Backend
-- Node.js (Latest LTS)
+- Node.js
 - Express.js
-- MySQL 8+
-- JWT + OAuth Authentication
-- Prisma ORM (Preferred)
-- REST API
-- bcrypt
-- Helmet
-- CORS
-- Rate Limiting
-- Winston Logger
-- Multer
-- ExcelJS
-- PDFKit OR Puppeteer (Preferred for professional reports)
-- Chart.js
+- TypeScript
 
 Frontend
-
 - React
 - Vite
 - TypeScript
-- React Router
-- Axios
-- React Hook Form
-- TailwindCSS
-- shadcn/ui
-- Recharts
-- RTL Support
-- Persian Fonts (Vazir or IRANSans)
 
 Database
-
-MySQL
+- MySQL
 
 Authentication
+- OAuth Login
+- Session/JWT
 
-OAuth
-JWT
-Refresh Tokens
-Role Based Access Control (RBAC)
+Language
+- Entire UI must be in Persian (Farsi RTL)
+- Database, variables, API, and code must remain in English.
 
----
+The project must be production-ready, scalable, modular, secure, and maintainable.
 
-# Supported Languages
+==================================================
+PROJECT PURPOSE
+==================================================
 
-UI Language:
-Persian (RTL)
+This platform is used by a company to manage all financial operations.
 
-Developer Language:
-English
+It should allow accountants and administrators to manage:
 
-Database:
-English
+• Income
+• Expenses
+• Employee salaries
+• Bonuses
+• Advances
+• Company purchases
+• Operational costs
+• Vendors
+• Financial reports
+• Profit/Loss analysis
+• Excel exports
+• Professional PDF reports
 
-API:
-English
+Everything must be stored in MySQL.
 
-Source Code:
-English
+==================================================
+DEFAULT BUSINESS RULE
+==================================================
 
----
+Default Tax/VAT:
 
-# User Roles
+9%
 
-1. Super Admin
+Every financial transaction should automatically include a 9% tax unless the accountant disables it for that transaction.
 
-Full system access
+The default is ENABLED.
 
-Can manage everything
+==================================================
+USER ROLES
+==================================================
 
-Can manage settings
+Administrator
 
-Can create admins
+Can:
 
-Can manage users
+- Manage users
+- Manage roles
+- View all reports
+- Edit everything
+- Delete everything
+- System settings
+- Export reports
+- Financial dashboard
 
-Can view reports
+--------------------------------------------
 
-Can export reports
+Accountant
 
-Can manage taxes
+Can:
 
-Can manage permissions
+- Create expenses
+- Create income
+- Register salaries
+- Register bonuses
+- Register purchases
+- Register operational costs
+- Export reports
+- View dashboards
 
---------------------------
+Cannot:
 
-2. Admin
+- Manage users
+- Change system settings
 
-Manage finance
+--------------------------------------------
 
-Manage accountants
+Viewer
 
-View reports
+Read-only access.
 
-Export reports
+==================================================
+MODULES
+==================================================
 
-Approve records
+1. Dashboard
 
---------------------------
+Modern dashboard showing:
 
-3. Accountant
+Today's income
 
-Create income
+Today's expenses
 
-Create expenses
+Monthly income
 
-Manage salaries
+Monthly expenses
 
-Manage bonuses
+Current profit
 
-Generate reports
-
-Cannot change system settings
-
---------------------------
-
-4. HR
-
-Manage employees
-
-Manage salaries
-
-Manage bonuses
-
-Cannot access company settings
-
---------------------------
-
-5. Viewer
-
-Read only
-
-No editing
-
----
-
-# System Modules
-
-## Authentication
-
-Login
-
-Logout
-
-OAuth
-
-JWT
-
-Forgot Password
-
-Reset Password
-
-Change Password
-
-Profile
-
-Session Management
-
-Role Permissions
-
-Audit Logs
-
----
-
-# Dashboard
-
-Professional dashboard
-
-Cards:
-
-Total Income
-
-Total Expense
-
-Net Profit
-
-Net Loss
-
-Total Employees
-
-Total Salary
-
-Total Bonuses
-
-Today's Expenses
-
-Monthly Income
-
-Monthly Expense
-
-Pending Payments
-
-Tax Amount
-
-Charts
-
-Monthly Income
-
-Monthly Expense
-
-Profit Trend
-
-Expense Categories
+Current loss
 
 Cash Flow
 
-Salary Distribution
+Employee salary total
 
----
+Bonus total
 
-# Employee Management
+Tax total
 
-Employee CRUD
+Recent transactions
 
-Employee Code
+Charts
+
+==================================================
+
+2. Employees
+
+Employee Information
+
+Name
 
 National ID
 
 Phone
-
-Email
 
 Department
 
@@ -239,79 +155,107 @@ Position
 
 Hire Date
 
-Status
-
 Salary
+
+Status
 
 Notes
 
-Attachments
+==================================================
 
----
+3. Income
 
-# Income Management
+Register income
 
-Create Income
+Fields
 
-Edit Income
+Date
 
-Delete Income
+Category
 
-Search
-
-Filters
-
-Income Categories
-
-Income Date
-
-Reference Number
-
-Payment Method
-
-Invoice Upload
+Title
 
 Description
 
----
+Amount
 
-# Expense Management
-
-Create Expense
-
-Edit Expense
-
-Delete Expense
-
-Expense Categories
-
-Project
-
-Department
-
-Vendor
-
-Invoice
+Tax Enabled
 
 Attachments
 
+Created By
+
+==================================================
+
+4. Expenses
+
+Register expense
+
+Examples
+
+Office Supplies
+
+Internet
+
+Electricity
+
+Water
+
+Rent
+
+Maintenance
+
+Marketing
+
+Transportation
+
+Software
+
+Hardware
+
+Food
+
+Travel
+
+Miscellaneous
+
+Each expense contains
+
+Date
+
+Category
+
+Title
+
 Description
 
----
+Amount
 
-# Salary Management
+Tax Enabled
+
+Attachment
+
+Created By
+
+==================================================
+
+5. Salary Management
+
+Each employee can have
 
 Monthly Salary
 
+Bonus
+
+Advance
+
 Overtime
 
-Bonus
+Deduction
 
 Insurance
 
 Tax
-
-Deductions
 
 Net Salary
 
@@ -319,255 +263,69 @@ Payment Status
 
 Payment Date
 
-Salary History
+Notes
 
----
+==================================================
 
-# Bonus Management
+6. Bonus Management
 
-Bonus
+Bonuses
 
-Reward
+Reason
 
-Gift
+Amount
 
-Commission
+Date
 
-Performance Bonus
+Approved By
 
-Special Bonus
+==================================================
 
-History
+7. Vendors
 
----
+Vendor Information
 
-# Tax System
+Company
 
-System Default Tax
+Phone
 
-9%
+Address
 
-Enabled by default
+Description
 
-Administrator can:
+Payment History
 
-Enable
+==================================================
+REPORTING SYSTEM
+==================================================
 
-Disable
+This is one of the most important parts.
 
-Change Percentage
+The system must generate TWO report formats.
 
-Tax should automatically calculate on financial transactions where applicable.
+--------------------------------------------
 
-Every report must display
+1) Excel Report
 
-Gross Amount
+Professional Excel export.
 
-Tax Amount
+Multiple sheets.
 
-Net Amount
-
----
-
-# Categories
-
-Expense Categories
-
-Income Categories
-
-Projects
-
-Departments
-
-Payment Methods
-
-Currencies
-
-Tags
-
-Fully customizable
-
----
-
-# Financial Calculations
-
-System must automatically calculate
-
-Total Income
-
-Total Expenses
-
-Gross Profit
-
-Gross Loss
-
-Tax
-
-Net Profit
-
-Net Loss
-
-Employee Costs
-
-Department Costs
-
-Project Costs
-
-Monthly Comparison
-
-Yearly Comparison
-
-Custom Date Range
-
----
-
-# Reports
-
-This is one of the most important modules.
-
-The system must generate two professional report formats.
-
-----------------------------------------
-
-1. Excel Export
-
-Generate professional Excel files.
-
-Include:
+Examples
 
 Income
 
 Expenses
 
-Bonuses
+Salary
 
-Salaries
+Bonuses
 
 Taxes
 
-Projects
+Profit/Loss
 
-Departments
-
-Employee Costs
-
-Profit
-
-Loss
-
-Summary Sheet
-
-Totals
-
-Automatic formatting
-
-Professional tables
-
-Filters
-
-Company logo
-
-Persian headers
-
-RTL support
-
-----------------------------------------
-
-2. Professional PDF Report
-
-Generate a beautiful, executive-quality PDF report in Persian.
-
-The PDF should not be a simple table.
-
-It must look like a report prepared by a financial consultant.
-
-Include:
-
-Company Information
-
-Report Title
-
-Date
-
-Prepared By
-
-Executive Summary
-
-Financial Summary
-
-Income Summary
-
-Expense Summary
-
-Salary Summary
-
-Bonus Summary
-
-Tax Summary
-
-Net Profit
-
-Net Loss
-
-Department Analysis
-
-Project Analysis
-
-Top Expenses
-
-Top Income Sources
-
-Employee Cost Analysis
-
-Recommendations
-
-Management Notes
-
-Footer
-
-Page Numbers
-
-Professional Cover Page
-
-Company Logo
-
-Persian Typography
-
-RTL Layout
-
-Professional Colors
-
-Icons
-
-Modern Design
-
-At least 4 professional charts.
-
-Examples:
-
-Monthly Income Chart
-
-Monthly Expense Chart
-
-Profit vs Expense
-
-Department Cost Distribution
-
-Cash Flow
-
-Salary Distribution
-
-Project Cost Distribution
-
-Tax Breakdown
-
-The PDF must be presentation quality.
-
----
-
-# Search
-
-Global Search
+Summary
 
 Filters
 
@@ -575,35 +333,153 @@ Date Range
 
 Employee
 
-Project
+Department
+
+Category
+
+==================================================
+
+2) Professional PDF Report
+
+Generate a beautiful Persian report.
+
+The PDF should contain:
+
+Company Information
+
+Report Date
+
+Selected Period
+
+Executive Summary
+
+Income Summary
+
+Expense Summary
+
+Profit Summary
+
+Loss Summary
+
+Employee Salary Summary
+
+Bonus Summary
+
+Tax Summary
+
+Financial Analysis
+
+Recommendations
+
+Every section should have Persian explanations.
+
+==================================================
+PDF CHARTS
+==================================================
+
+Include at least 4 professional charts.
+
+Examples
+
+Monthly Income
+
+Monthly Expenses
+
+Income vs Expense
+
+Profit Trend
+
+Cash Flow
+
+Department Costs
+
+Salary Distribution
+
+Expense Categories
+
+Use modern colorful charts.
+
+==================================================
+FINANCIAL ANALYSIS
+==================================================
+
+The PDF must automatically analyze data.
+
+Examples
+
+Total income
+
+Total expenses
+
+Net profit
+
+Net loss
+
+Highest expense category
+
+Highest income category
+
+Most expensive department
+
+Employee payment statistics
+
+Tax collected
+
+Average monthly expenses
+
+Average monthly income
+
+Top expenses
+
+Top income sources
+
+Growth comparison
+
+Financial recommendations in Persian
+
+==================================================
+SEARCH
+==================================================
+
+Global search.
+
+Search by
+
+Employee
+
+Expense
+
+Income
+
+Category
+
+Vendor
+
+Description
+
+==================================================
+FILTERS
+==================================================
+
+Filter every page by
+
+Date
+
+Category
+
+Employee
 
 Department
 
-Expense Type
+Tax Enabled
 
-Income Type
+Created By
 
-Status
+==================================================
+AUDIT LOG
+==================================================
 
----
-
-# Notifications
-
-Salary Reminder
-
-Expense Approval
-
-Monthly Report Ready
-
-System Alerts
-
-Email Notifications
-
----
-
-# Audit Logs
-
-Every important action should be logged.
+Every action must be logged.
 
 Login
 
@@ -617,73 +493,93 @@ Delete
 
 Export
 
-Permission Changes
+User
 
-Settings Changes
+IP
 
----
+Timestamp
 
-# Settings
+==================================================
+NOTIFICATIONS
+==================================================
 
-Company Name
+Show success and error notifications.
 
-Company Logo
+==================================================
+FILE UPLOAD
+==================================================
 
-Address
+Allow uploading
 
-Phone
+Invoice
 
-Email
+Receipt
 
-Website
+PDF
 
-Tax Percentage
+Image
 
-Currency
+Document
 
-Timezone
+Store files securely.
 
-Language
+==================================================
+DASHBOARD CHARTS
+==================================================
 
-Theme
+Interactive charts.
 
-Dark Mode
+Monthly Income
 
-Light Mode
+Monthly Expense
 
----
+Profit
 
-# Security
+Salary
 
-Helmet
+Bonuses
 
-Rate Limiting
+Taxes
 
-CSRF Protection
+==================================================
+DATABASE
+==================================================
 
-Input Validation
+Design a fully normalized MySQL database.
 
-SQL Injection Protection
+Include
 
-XSS Protection
+Primary Keys
 
-Parameterized Queries
+Foreign Keys
 
-Secure Cookies
+Indexes
 
-Refresh Tokens
+Relations
 
-Password Hashing
+Cascade Rules
 
-Audit Logs
+==================================================
+API
+==================================================
 
----
+REST API
 
-# API
+Use
 
-RESTful API
+Controllers
 
-Proper Status Codes
+Services
+
+Repositories
+
+Validation
+
+Authentication
+
+Authorization
+
+Error Handling
 
 Pagination
 
@@ -691,124 +587,186 @@ Filtering
 
 Sorting
 
-Search
+Searching
 
-Validation
+==================================================
+SECURITY
+==================================================
 
-Swagger Documentation
+OAuth Authentication
 
----
+JWT
 
-# UI Requirements
+Role Based Access Control
 
-Modern
+Password Hashing
 
-Minimal
+Helmet
 
-Fast
+Rate Limiting
+
+CORS
+
+SQL Injection Protection
+
+XSS Protection
+
+CSRF Protection
+
+Input Validation
+
+==================================================
+PROJECT STRUCTURE
+==================================================
+
+Create a clean enterprise architecture.
+
+Backend
+
+src/
+
+controllers
+
+services
+
+repositories
+
+routes
+
+middlewares
+
+models
+
+validators
+
+config
+
+utils
+
+types
+
+database
+
+reports
+
+excel
+
+pdf
+
+charts
+
+uploads
+
+logs
+
+Frontend
+
+src/
+
+pages
+
+components
+
+layouts
+
+hooks
+
+services
+
+api
+
+store
+
+utils
+
+types
+
+assets
+
+styles
+
+==================================================
+UI
+==================================================
+
+Modern Admin Panel
 
 Responsive
 
 RTL
 
-Persian
-
-Professional
-
 Dark Mode
 
 Light Mode
 
-Large Data Tables
+Professional Persian Typography
 
-Sticky Headers
+Beautiful Cards
 
-Sidebar Navigation
+Tables
 
-Breadcrumbs
+Charts
 
-Loading Skeletons
+Statistics
 
-Toast Notifications
+Animations
 
-Confirmation Dialogs
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
 
-Keyboard Shortcuts
+Generate the complete project step by step.
 
----
+Include:
 
-# Future Ready
+1. Folder Structure
 
-The architecture must allow future modules without major refactoring.
+2. Database Schema
 
-Examples:
+3. MySQL Tables
 
-Inventory
+4. API Design
 
-Warehouse
+5. Backend Architecture
 
-CRM
+6. Frontend Architecture
 
-Accounting
+7. Authentication
 
-Bank Accounts
+8. Report Engine
 
-Checks
+9. Excel Export Engine
 
-Invoices
+10. PDF Report Engine
 
-Purchase Orders
+11. Chart Generation
 
-Sales Orders
+12. Dashboard
 
-Assets
+13. Employee Management
 
-Loans
+14. Salary Module
 
-Multi Company
+15. Income Module
 
-Multi Branch
+16. Expense Module
 
-Multi Currency
+17. Vendor Module
 
-API Integration
+18. Audit Logs
 
-SMS Gateway
+19. Security
 
-Payment Gateway
+20. Production Configuration
 
-Accounting Integration
+21. Docker Support
 
----
+22. Environment Variables
 
-# Coding Standards
+23. README
 
-Use clean architecture.
+24. Installation Guide
 
-Separate Controllers, Services, Repositories, Middleware, Models, Routes, Validators, Utilities, and Config.
+25. Deployment Guide
 
-Avoid duplicated code.
-
-Follow SOLID principles.
-
-Use reusable components.
-
-Write readable code.
-
-Write documentation.
-
-Add comments only where necessary.
-
-Use TypeScript where possible.
-
-Implement proper error handling.
-
-Return standardized API responses.
-
-Create database migrations and seeders.
-
-Use environment variables.
-
-Design the project so it can support hundreds of thousands of financial records efficiently.
-
-The final product should feel like a commercial ERP/Financial Management System rather than a simple CRUD application.
+The code should follow enterprise-level best practices, SOLID principles, clean architecture, reusable components, and be easily extensible for future financial features.
