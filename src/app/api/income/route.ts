@@ -17,7 +17,7 @@ export async function GET(request: Request) {
   const conditions: ReturnType<typeof sql>[] = [];
 
   if (search) {
-    conditions.push(sql`${income.title} ILIKE ${"%" + search + "%"}`);
+    conditions.push(sql`${income.title} LIKE ${"%" + search + "%"}`);
   }
   if (categoryId) {
     conditions.push(sql`${income.categoryId} = ${parseInt(categoryId)}`);
