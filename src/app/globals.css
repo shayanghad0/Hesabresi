@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @source "../**/*.{tsx,ts,jsx,js}";
 
+@custom-variant dark (&:is(.dark *));
+
 @theme {
   --font-sans: "Vazirmatn", "Tahoma", "Arial", sans-serif;
   --color-primary-50: #eff6ff;
