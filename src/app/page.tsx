@@ -831,6 +831,11 @@ function DashboardPage() {
   if (loading) return <Spinner />;
   if (!data) return <div className="text-center text-red-500 dark:text-red-400">خطا در بارگذاری</div>;
 
+  const monthlyChartData = data.monthlyChartData || [];
+  const expenseByCategory = data.expenseByCategory || [];
+  const recentIncome = data.recentIncome || [];
+  const recentExpenses = data.recentExpenses || [];
+
   return (
     <div className="space-y-6">
       {/* Stat cards */}
@@ -854,7 +859,7 @@ function DashboardPage() {
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5">
           <h3 className="font-bold text-gray-800 dark:text-white mb-4">📊 درآمد و هزینه ماهانه</h3>
           <BarChart
-            data={data.monthlyChartData.map((m) => ({
+            data={monthlyChartData.map((m: { month: string; income: number; expense: number }) => ({
               label: m.month,
               values: [m.income / 1000000, m.expense / 1000000],
               colors: ["#22c55e", "#ef4444"],
@@ -868,13 +873,13 @@ function DashboardPage() {
 
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5">
           <h3 className="font-bold text-gray-800 dark:text-white mb-4">📊 دسته‌بندی هزینه‌ها</h3>
-          <PieChart data={data.expenseByCategory} size={220} />
+          <PieChart data={expenseByCategory} size={220} />
         </div>
 
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5">
           <h3 className="font-bold text-gray-800 dark:text-white mb-4">📈 روند سود</h3>
           <LineChart
-            data={data.monthlyChartData.map((m) => ({
+            data={monthlyChartData.map((m: { month: string; profit: number }) => ({
               label: m.month,
               value: Math.max(m.profit / 1000000, 0),
             }))}
@@ -884,7 +889,7 @@ function DashboardPage() {
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5">
           <h3 className="font-bold text-gray-800 dark:text-white mb-4">🔄 آخرین تراکنش‌ها</h3>
           <div className="space-y-2 max-h-64 overflow-y-auto">
-            {[...data.recentIncome.map((r: any) => ({ ...r, _type: "income" })), ...data.recentExpenses.map((r: any) => ({ ...r, _type: "expense" }))]
+            {[...recentIncome.map((r: any) => ({ ...r, _type: "income" })), ...recentExpenses.map((r: any) => ({ ...r, _type: "expense" }))]
               .sort((a: any, b: any) => new Date(b.createdAt || b.created_at).getTime() - new Date(a.createdAt || a.created_at).getTime())
               .slice(0, 8)
               .map((t: any, i: number) => (

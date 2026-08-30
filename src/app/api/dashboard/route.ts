@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { income, expenses, employees, salaryPayments, bonuses, auditLogs } from "@/db/schema";
+import { income, expenses, employees, salaryPayments, bonuses, categories } from "@/db/schema";
 import { sql, desc } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
@@ -96,12 +96,12 @@ export async function GET() {
     // Expense categories breakdown
     const expenseByCat = await db
       .select({
-        category: sql<string>`COALESCE(c.name, 'سایر')`,
+        category: sql<string>`COALESCE(${categories.name}, 'سایر')`,
         total: sql<number>`COALESCE(SUM(${expenses.totalAmount}), 0)`,
       })
       .from(expenses)
-      .leftJoin(sql`categories c`, sql`c.id = ${expenses.categoryId}`)
-      .groupBy(sql`c.name`);
+      .leftJoin(categories, sql`${categories.id} = ${expenses.categoryId}`)
+      .groupBy(categories.name);
 
     // Recent transactions
     const recentIncome = await db
