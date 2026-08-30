@@ -1,21 +1,12 @@
 "use client";
 
 import { useState, useEffect, useCallback, type ReactNode, type FormEvent } from "react";
-import { useTheme } from "@/providers/ThemeProvider";
+import { redirect } from "next/navigation";
 
 // ============================================================
 // Types
 // ============================================================
-interface User {
-  id: number;
-  email: string;
-  name: string;
-  roleId: number | null;
-  roleName: string;
-  permissions: string[];
-}
-
-interface DashboardData {
+export interface DashboardData {
   todayIncome: number;
   todayExpense: number;
   monthlyIncome: number;
@@ -34,7 +25,7 @@ interface DashboardData {
   recentExpenses: Record<string, unknown>[];
 }
 
-interface Employee {
+export interface Employee {
   id: number;
   firstName: string;
   lastName: string;
@@ -49,7 +40,7 @@ interface Employee {
   notes: string | null;
 }
 
-interface Category {
+export interface Category {
   id: number;
   name: string;
   type: string;
@@ -57,7 +48,7 @@ interface Category {
   color: string | null;
 }
 
-interface IncomeRecord {
+export interface IncomeRecord {
   id: number;
   title: string;
   categoryId: number | null;
@@ -71,7 +62,7 @@ interface IncomeRecord {
   createdAt: string;
 }
 
-interface ExpenseRecord {
+export interface ExpenseRecord {
   id: number;
   title: string;
   categoryId: number | null;
@@ -87,7 +78,7 @@ interface ExpenseRecord {
   createdAt: string;
 }
 
-interface SalaryRecord {
+export interface SalaryRecord {
   id: number;
   employeeId: number;
   employeeName: string;
@@ -104,7 +95,7 @@ interface SalaryRecord {
   description: string | null;
 }
 
-interface BonusRecord {
+export interface BonusRecord {
   id: number;
   employeeId: number;
   employeeName: string;
@@ -114,7 +105,7 @@ interface BonusRecord {
   description: string | null;
 }
 
-interface ReportData {
+export interface ReportData {
   summary: {
     totalIncome: number;
     totalIncomeNet: number;
@@ -141,27 +132,27 @@ interface ReportData {
 // ============================================================
 // Utility Functions
 // ============================================================
-const persianDigits = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
-function toPersian(str: string | number): string {
+export const persianDigits = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
+export function toPersian(str: string | number): string {
   return String(str).replace(/[0-9]/g, (d) => persianDigits[parseInt(d)]);
 }
 
-function formatCurrency(amount: number | null | undefined): string {
+export function formatCurrency(amount: number | null | undefined): string {
   if (amount == null || amount === 0) return toPersian("0") + " ریال";
   return toPersian(Math.abs(amount).toLocaleString("en-US")) + " ریال";
 }
 
-function formatNum(n: number | null | undefined): string {
+export function formatNum(n: number | null | undefined): string {
   if (n == null) return toPersian("0");
   return toPersian(n.toLocaleString("en-US"));
 }
 
-const JALALI_BREAKS = [
+export const JALALI_BREAKS = [
   -61, 9, 38, 199, 426, 686, 756, 818, 1111, 1181,
   1210, 1635, 2060, 2097, 2192, 2262, 2324, 2394, 2456, 3178,
 ];
 
-function gregorianToJalali(gy: number, gm: number, gd: number) {
+export function gregorianToJalali(gy: number, gm: number, gd: number) {
   const gDaysInMonth = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
   let gy2 = gm > 2 ? gy + 1 : gy;
   let days =
@@ -186,7 +177,7 @@ function gregorianToJalali(gy: number, gm: number, gd: number) {
   return { jy, jm, jd };
 }
 
-function toJalali(dateStr: string | Date | null | undefined): string {
+export function toJalali(dateStr: string | Date | null | undefined): string {
   if (!dateStr) return "";
   const d = new Date(dateStr);
   if (isNaN(d.getTime())) return String(dateStr);
@@ -203,12 +194,12 @@ function toJalali(dateStr: string | Date | null | undefined): string {
 // ============================================================
 // Simple Chart Components (SVG-based, no external lib)
 // ============================================================
-const CHART_COLORS = [
+export const CHART_COLORS = [
   "#3b82f6", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6",
   "#ec4899", "#14b8a6", "#f97316", "#6366f1", "#64748b",
 ];
 
-function BarChart({
+export function BarChart({
   data,
   width = 600,
   height = 300,
@@ -279,7 +270,7 @@ function BarChart({
   );
 }
 
-function PieChart({
+export function PieChart({
   data,
   size = 200,
 }: {
@@ -334,7 +325,7 @@ function PieChart({
   );
 }
 
-function LineChart({
+export function LineChart({
   data,
   width = 600,
   height = 250,
@@ -413,7 +404,7 @@ function LineChart({
 // UI Components
 // ============================================================
 
-function Spinner() {
+export function Spinner() {
   return (
     <div className="flex justify-center items-center py-12">
       <div className="w-8 h-8 border-4 border-blue-200 dark:border-blue-800 border-t-blue-600 dark:border-t-blue-400 rounded-full animate-spin" />
@@ -421,7 +412,7 @@ function Spinner() {
   );
 }
 
-function StatCard({
+export function StatCard({
   title,
   value,
   icon,
@@ -460,7 +451,7 @@ function StatCard({
   );
 }
 
-function Modal({
+export function Modal({
   open,
   onClose,
   title,
@@ -488,7 +479,7 @@ function Modal({
   );
 }
 
-function Input({
+export function Input({
   label,
   ...props
 }: { label: string } & React.InputHTMLAttributes<HTMLInputElement>) {
@@ -503,7 +494,7 @@ function Input({
   );
 }
 
-function Select({
+export function Select({
   label,
   options,
   ...props
@@ -529,7 +520,7 @@ function Select({
   );
 }
 
-function TextArea({
+export function TextArea({
   label,
   ...props
 }: { label: string } & React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
@@ -545,7 +536,7 @@ function TextArea({
   );
 }
 
-function Button({
+export function Button({
   children,
   variant = "primary",
   ...props
@@ -570,252 +561,9 @@ function Button({
 }
 
 // ============================================================
-// Main App
-// ============================================================
-type Page =
-  | "dashboard"
-  | "employees"
-  | "categories"
-  | "income"
-  | "expenses"
-  | "salary"
-  | "bonuses"
-  | "reports"
-  | "settings";
-
-const MENU_ITEMS: { key: Page; label: string; icon: string }[] = [
-  { key: "dashboard", label: "داشبورد", icon: "📊" },
-  { key: "income", label: "درآمدها", icon: "💰" },
-  { key: "expenses", label: "هزینه‌ها", icon: "💸" },
-  { key: "employees", label: "کارکنان", icon: "👥" },
-  { key: "salary", label: "حقوق و دستمزد", icon: "🏦" },
-  { key: "bonuses", label: "پاداش‌ها", icon: "🎁" },
-  { key: "categories", label: "دسته‌بندی‌ها", icon: "📁" },
-  { key: "reports", label: "گزارشات", icon: "📈" },
-  { key: "settings", label: "تنظیمات", icon: "⚙️" },
-];
-
-export default function App() {
-  const { theme, toggleTheme } = useTheme();
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState<Page>("dashboard");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  useEffect(() => {
-    fetch("/api/auth/me", { credentials: "include" })
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.user) setUser(d.user);
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (loading) return <Spinner />;
-
-  if (!user) {
-    return <LoginPage onLogin={setUser} />;
-  }
-
-  return (
-    <div className="flex h-screen overflow-hidden dark:bg-gray-900">
-      {/* Mobile overlay */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/30 z-40 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
-      {/* Sidebar */}
-      <aside
-        className={`no-print fixed lg:static inset-y-0 right-0 z-50 w-64 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 shadow-lg lg:shadow-none transform transition-transform duration-300 ${
-          sidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"
-        }`}
-      >
-        <div className="h-full flex flex-col">
-          <div className="p-5 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-l from-blue-600 to-blue-700">
-            <h1 className="text-white font-bold text-lg">سامانه مالی</h1>
-            <p className="text-blue-200 text-xs mt-1">مدیریت مالی شرکت</p>
-          </div>
-
-          <nav className="flex-1 py-3 overflow-y-auto">
-            {MENU_ITEMS.map((item) => (
-              <button
-                key={item.key}
-                onClick={() => {
-                  setCurrentPage(item.key);
-                  setSidebarOpen(false);
-                }}
-                className={`w-full flex items-center gap-3 px-5 py-2.5 text-sm transition-colors ${
-                  currentPage === item.key
-                    ? "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-l-3 border-blue-600 font-medium"
-                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
-                }`}
-              >
-                <span className="text-lg">{item.icon}</span>
-                <span>{item.label}</span>
-              </button>
-            ))}
-          </nav>
-
-          <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                {user.name.charAt(0)}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate dark:text-white">{user.name}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">{user.roleName === "administrator" ? "مدیر سیستم" : user.roleName === "accountant" ? "حسابدار" : "کاربر"}</p>
-              </div>
-            </div>
-            <button
-              onClick={async () => {
-                await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
-                setUser(null);
-              }}
-              className="w-full text-center text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg py-2 transition"
-            >
-              خروج از سیستم
-            </button>
-          </div>
-        </div>
-      </aside>
-
-      {/* Main */}
-      <main className="flex-1 overflow-y-auto dark:bg-gray-900">
-        {/* Top bar */}
-        <header className="no-print bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-5 py-3 flex items-center justify-between sticky top-0 z-30">
-          <button
-            className="lg:hidden text-gray-600 dark:text-gray-300 text-2xl"
-            onClick={() => setSidebarOpen(true)}
-          >
-            ☰
-          </button>
-          <h2 className="text-lg font-bold text-gray-800 dark:text-white">
-            {MENU_ITEMS.find((m) => m.key === currentPage)?.label || ""}
-          </h2>
-          <div className="flex items-center gap-3">
-            <button onClick={toggleTheme} className="text-gray-600 dark:text-gray-300 text-xl hover:scale-110 transition" aria-label="تغییر تم">
-              {theme === "light" ? "🌙" : "☀️"}
-            </button>
-            <div className="text-sm text-gray-500 dark:text-gray-400">{toJalali(new Date())}</div>
-          </div>
-        </header>
-
-        <div className="p-4 lg:p-6">
-          {currentPage === "dashboard" && <DashboardPage />}
-          {currentPage === "employees" && <EmployeesPage />}
-          {currentPage === "categories" && <CategoriesPage />}
-          {currentPage === "income" && <IncomePage />}
-          {currentPage === "expenses" && <ExpensesPage />}
-          {currentPage === "salary" && <SalaryPage />}
-          {currentPage === "bonuses" && <BonusesPage />}
-          {currentPage === "reports" && <ReportsPage />}
-          {currentPage === "settings" && <SettingsPage />}
-        </div>
-      </main>
-    </div>
-  );
-}
-
-// ============================================================
-// Login Page
-// ============================================================
-function LoginPage({ onLogin }: { onLogin: (u: User) => void }) {
-  const [email, setEmail] = useState("admin@company.ir");
-  const [password, setPassword] = useState("admin123");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-        credentials: "include",
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || "خطا در ورود");
-        return;
-      }
-      // Use user from login response directly
-      if (data.user) {
-        onLogin(data.user);
-      } else {
-        // Fallback to /me endpoint
-        const meRes = await fetch("/api/auth/me", { credentials: "include" });
-        const meData = await meRes.json();
-        if (meData.user) onLogin(meData.user);
-        else setError("خطا در دریافت اطلاعات کاربر");
-      }
-    } catch (err) {
-      console.error("Login error:", err);
-      setError("خطای ارتباط با سرور");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-white text-3xl">
-            💰
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">سامانه مدیریت مالی</h1>
-          <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">برای ورود اطلاعات خود را وارد کنید</p>
-        </div>
-
-        <form onSubmit={handleSubmit}>
-          {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 px-4 py-2 rounded-lg text-sm mb-4">
-              {error}
-            </div>
-          )}
-          <Input
-            label="ایمیل"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="admin@company.ir"
-          />
-          <Input
-            label="رمز عبور"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••"
-          />
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg text-sm font-medium transition disabled:opacity-50"
-          >
-            {loading ? "در حال ورود..." : "ورود به سیستم"}
-          </button>
-
-          <div className="mt-4 text-xs text-gray-400 dark:text-gray-500 text-center">
-            <p>ایمیل: admin@company.ir</p>
-            <p>رمز عبور: admin123</p>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
-
-// ============================================================
 // Dashboard Page
 // ============================================================
-function DashboardPage() {
+export function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -906,7 +654,7 @@ function DashboardPage() {
 // ============================================================
 // Employees Page
 // ============================================================
-function EmployeesPage() {
+export function EmployeesPage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -1062,7 +810,7 @@ function EmployeesPage() {
 // ============================================================
 // Categories Page
 // ============================================================
-function CategoriesPage() {
+export function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -1173,7 +921,7 @@ function CategoriesPage() {
 // ============================================================
 // Income Page
 // ============================================================
-function IncomePage() {
+export function IncomePage() {
   const [records, setRecords] = useState<IncomeRecord[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -1331,7 +1079,7 @@ function IncomePage() {
 // ============================================================
 // Expenses Page
 // ============================================================
-function ExpensesPage() {
+export function ExpensesPage() {
   const [records, setRecords] = useState<ExpenseRecord[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -1500,7 +1248,7 @@ function ExpensesPage() {
 // ============================================================
 // Salary Page
 // ============================================================
-function SalaryPage() {
+export function SalaryPage() {
   const [records, setRecords] = useState<SalaryRecord[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
@@ -1639,7 +1387,7 @@ function SalaryPage() {
 // ============================================================
 // Bonuses Page
 // ============================================================
-function BonusesPage() {
+export function BonusesPage() {
   const [records, setRecords] = useState<BonusRecord[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
@@ -1738,7 +1486,7 @@ function BonusesPage() {
 // ============================================================
 // Reports Page
 // ============================================================
-function ReportsPage() {
+export function ReportsPage() {
   const [data, setData] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(false);
   const [dateFrom, setDateFrom] = useState("2024-01-01");
@@ -1965,7 +1713,7 @@ ${data.topEmployees.map((e, i) => `<div class="emp-row"><div style="display:flex
 // ============================================================
 // Settings Page
 // ============================================================
-function SettingsPage() {
+export function SettingsPage() {
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -2051,4 +1799,11 @@ function SettingsPage() {
       </div>
     </div>
   );
+}
+
+// ============================================================
+// Root Page - Redirect to Dashboard
+// ============================================================
+export default function RootPage() {
+  redirect("/dashboard");
 }
