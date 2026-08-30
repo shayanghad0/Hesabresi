@@ -4,3 +4,4 @@ hesabresi.db
 .env.local
 *.md
 *
+data/hesabresi.db
