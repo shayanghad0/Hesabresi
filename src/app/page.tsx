@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, type ReactNode, type FormEvent } from "react";
+import { useTheme } from "@/providers/ThemeProvider";
 
 // ============================================================
 // Types
@@ -216,7 +217,7 @@ function BarChart({
   width?: number;
   height?: number;
 }) {
-  if (data.length === 0) return <div className="text-center text-gray-400 py-8">داده‌ای موجود نیست</div>;
+  if (data.length === 0) return <div className="text-center text-gray-400 dark:text-gray-500 py-8">داده‌ای موجود نیست</div>;
   const maxVal = Math.max(...data.flatMap((d) => d.values), 1);
   const barW = Math.min(30, (width - 80) / (data.length * data[0].values.length + data.length));
   const groupW = barW * (data[0]?.values.length || 1) + 10;
@@ -238,6 +239,7 @@ function BarChart({
               x2={chartW - 10}
               y2={height - f * (height - 40)}
               stroke="#e5e7eb"
+              className="dark:stroke-gray-600"
               strokeWidth={0.5}
             />
           </g>
@@ -265,7 +267,7 @@ function BarChart({
               x={70 + i * groupW + (d.values.length * barW) / 2}
               y={height + 18}
               textAnchor="middle"
-              className="text-[9px] fill-gray-500"
+              className="text-[9px] fill-gray-500 dark:fill-gray-400"
               style={{ fontFamily: "Vazirmatn, sans-serif", fontSize: 9 }}
             >
               {d.label}
@@ -284,9 +286,9 @@ function PieChart({
   data: { name: string; value: number }[];
   size?: number;
 }) {
-  if (data.length === 0) return <div className="text-center text-gray-400 py-8">داده‌ای موجود نیست</div>;
+  if (data.length === 0) return <div className="text-center text-gray-400 dark:text-gray-500 py-8">داده‌ای موجود نیست</div>;
   const total = data.reduce((s, d) => s + d.value, 0);
-  if (total === 0) return <div className="text-center text-gray-400 py-8">داده‌ای موجود نیست</div>;
+  if (total === 0) return <div className="text-center text-gray-400 dark:text-gray-500 py-8">داده‌ای موجود نیست</div>;
   const r = size / 2 - 10;
   const cx = size / 2;
   const cy = size / 2;
@@ -311,6 +313,7 @@ function PieChart({
               d={path}
               fill={CHART_COLORS[i % CHART_COLORS.length]}
               stroke="white"
+              className="dark:stroke-gray-800"
               strokeWidth={2}
             />
           );
@@ -318,7 +321,7 @@ function PieChart({
       </svg>
       <div className="flex flex-wrap gap-2 justify-center">
         {data.map((d, i) => (
-          <div key={i} className="flex items-center gap-1 text-xs">
+          <div key={i} className="flex items-center gap-1 text-xs text-gray-700 dark:text-gray-300">
             <div
               className="w-3 h-3 rounded-full"
               style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }}
@@ -340,7 +343,7 @@ function LineChart({
   width?: number;
   height?: number;
 }) {
-  if (data.length === 0) return <div className="text-center text-gray-400 py-8">داده‌ای موجود نیست</div>;
+  if (data.length === 0) return <div className="text-center text-gray-400 dark:text-gray-500 py-8">داده‌ای موجود نیست</div>;
   const maxVal = Math.max(...data.map((d) => d.value), 1);
   const paddingX = 60;
   const paddingY = 30;
@@ -381,6 +384,7 @@ function LineChart({
             x2={width - 20}
             y2={paddingY + chartH - f * chartH}
             stroke="#e5e7eb"
+            className="dark:stroke-gray-600"
             strokeWidth={0.5}
           />
         ))}
@@ -388,12 +392,12 @@ function LineChart({
         <path d={pathD} fill="none" stroke="#3b82f6" strokeWidth={2.5} />
         {points.map((p, i) => (
           <g key={i}>
-            <circle cx={p.x} cy={p.y} r={4} fill="white" stroke="#3b82f6" strokeWidth={2} />
+            <circle cx={p.x} cy={p.y} r={4} fill="white" className="dark:fill-gray-800" stroke="#3b82f6" strokeWidth={2} />
             <text
               x={p.x}
               y={paddingY + chartH + 16}
               textAnchor="middle"
-              className="text-[9px] fill-gray-500"
+              className="text-[9px] fill-gray-500 dark:fill-gray-400"
               style={{ fontFamily: "Vazirmatn, sans-serif", fontSize: 9 }}
             >
               {data[i].label}
@@ -412,7 +416,7 @@ function LineChart({
 function Spinner() {
   return (
     <div className="flex justify-center items-center py-12">
-      <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+      <div className="w-8 h-8 border-4 border-blue-200 dark:border-blue-800 border-t-blue-600 dark:border-t-blue-400 rounded-full animate-spin" />
     </div>
   );
 }
@@ -440,11 +444,11 @@ function StatCard({
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition-shadow">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 hover:shadow-md transition-shadow">
       <div className="flex items-center justify-between">
         <div className="flex-1">
-          <p className="text-xs text-gray-500 mb-1">{title}</p>
-          <p className="text-sm font-bold text-gray-800">{value}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{title}</p>
+          <p className="text-sm font-bold text-gray-800 dark:text-white">{value}</p>
         </div>
         <div
           className={`w-10 h-10 rounded-lg bg-gradient-to-br ${colorMap[color] || colorMap.blue} flex items-center justify-center text-white text-lg`}
@@ -471,10 +475,10 @@ function Modal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white rounded-t-2xl border-b px-5 py-4 flex items-center justify-between z-10">
-          <h3 className="text-lg font-bold">{title}</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl">
+      <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-white dark:bg-gray-800 rounded-t-2xl border-b border-gray-100 dark:border-gray-700 px-5 py-4 flex items-center justify-between z-10">
+          <h3 className="text-lg font-bold dark:text-white">{title}</h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-xl">
             ✕
           </button>
         </div>
@@ -490,9 +494,9 @@ function Input({
 }: { label: string } & React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <div className="mb-3">
-      <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{label}</label>
       <input
-        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-gray-50"
+        className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-gray-50 dark:bg-gray-700 dark:text-white"
         {...props}
       />
     </div>
@@ -509,9 +513,9 @@ function Select({
 } & React.SelectHTMLAttributes<HTMLSelectElement>) {
   return (
     <div className="mb-3">
-      <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{label}</label>
       <select
-        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-gray-50"
+        className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-gray-50 dark:bg-gray-700 dark:text-white"
         {...props}
       >
         <option value="">انتخاب کنید</option>
@@ -531,9 +535,9 @@ function TextArea({
 }: { label: string } & React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
     <div className="mb-3">
-      <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{label}</label>
       <textarea
-        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-gray-50"
+        className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-gray-50 dark:bg-gray-700 dark:text-white"
         rows={3}
         {...props}
       />
@@ -551,7 +555,7 @@ function Button({
 } & React.ButtonHTMLAttributes<HTMLButtonElement>) {
   const variants: Record<string, string> = {
     primary: "bg-blue-600 hover:bg-blue-700 text-white",
-    secondary: "bg-gray-100 hover:bg-gray-200 text-gray-700",
+    secondary: "bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300",
     danger: "bg-red-600 hover:bg-red-700 text-white",
     success: "bg-emerald-600 hover:bg-emerald-700 text-white",
   };
@@ -592,6 +596,7 @@ const MENU_ITEMS: { key: Page; label: string; icon: string }[] = [
 ];
 
 export default function App() {
+  const { theme, toggleTheme } = useTheme();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState<Page>("dashboard");
@@ -614,7 +619,7 @@ export default function App() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden dark:bg-gray-900">
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
@@ -625,12 +630,12 @@ export default function App() {
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:static inset-y-0 right-0 z-50 w-64 bg-white border-l border-gray-200 shadow-lg lg:shadow-none transform transition-transform duration-300 ${
+        className={`fixed lg:static inset-y-0 right-0 z-50 w-64 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 shadow-lg lg:shadow-none transform transition-transform duration-300 ${
           sidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"
         }`}
       >
         <div className="h-full flex flex-col">
-          <div className="p-5 border-b bg-gradient-to-l from-blue-600 to-blue-700">
+          <div className="p-5 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-l from-blue-600 to-blue-700">
             <h1 className="text-white font-bold text-lg">سامانه مالی</h1>
             <p className="text-blue-200 text-xs mt-1">مدیریت مالی شرکت</p>
           </div>
@@ -645,8 +650,8 @@ export default function App() {
                 }}
                 className={`w-full flex items-center gap-3 px-5 py-2.5 text-sm transition-colors ${
                   currentPage === item.key
-                    ? "bg-blue-50 text-blue-700 border-l-3 border-blue-600 font-medium"
-                    : "text-gray-600 hover:bg-gray-50"
+                    ? "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-l-3 border-blue-600 font-medium"
+                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
                 }`}
               >
                 <span className="text-lg">{item.icon}</span>
@@ -655,14 +660,14 @@ export default function App() {
             ))}
           </nav>
 
-          <div className="p-4 border-t bg-gray-50">
+          <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
                 {user.name.charAt(0)}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{user.name}</p>
-                <p className="text-xs text-gray-500">{user.roleName === "administrator" ? "مدیر سیستم" : user.roleName === "accountant" ? "حسابدار" : "کاربر"}</p>
+                <p className="text-sm font-medium truncate dark:text-white">{user.name}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{user.roleName === "administrator" ? "مدیر سیستم" : user.roleName === "accountant" ? "حسابدار" : "کاربر"}</p>
               </div>
             </div>
             <button
@@ -670,7 +675,7 @@ export default function App() {
                 await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
                 setUser(null);
               }}
-              className="w-full text-center text-sm text-red-600 hover:bg-red-50 rounded-lg py-2 transition"
+              className="w-full text-center text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg py-2 transition"
             >
               خروج از سیستم
             </button>
@@ -679,19 +684,24 @@ export default function App() {
       </aside>
 
       {/* Main */}
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto dark:bg-gray-900">
         {/* Top bar */}
-        <header className="bg-white border-b px-5 py-3 flex items-center justify-between sticky top-0 z-30">
+        <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-5 py-3 flex items-center justify-between sticky top-0 z-30">
           <button
-            className="lg:hidden text-gray-600 text-2xl"
+            className="lg:hidden text-gray-600 dark:text-gray-300 text-2xl"
             onClick={() => setSidebarOpen(true)}
           >
             ☰
           </button>
-          <h2 className="text-lg font-bold text-gray-800">
+          <h2 className="text-lg font-bold text-gray-800 dark:text-white">
             {MENU_ITEMS.find((m) => m.key === currentPage)?.label || ""}
           </h2>
-          <div className="text-sm text-gray-500">{toJalali(new Date())}</div>
+          <div className="flex items-center gap-3">
+            <button onClick={toggleTheme} className="text-gray-600 dark:text-gray-300 text-xl hover:scale-110 transition" aria-label="تغییر تم">
+              {theme === "light" ? "🌙" : "☀️"}
+            </button>
+            <div className="text-sm text-gray-500 dark:text-gray-400">{toJalali(new Date())}</div>
+          </div>
         </header>
 
         <div className="p-4 lg:p-6">
@@ -755,18 +765,18 @@ function LoginPage({ onLogin }: { onLogin: (u: User) => void }) {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 w-full max-w-md">
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-white text-3xl">
             💰
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">سامانه مدیریت مالی</h1>
-          <p className="text-gray-500 text-sm mt-2">برای ورود اطلاعات خود را وارد کنید</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">سامانه مدیریت مالی</h1>
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">برای ورود اطلاعات خود را وارد کنید</p>
         </div>
 
         <form onSubmit={handleSubmit}>
           {error && (
-            <div className="bg-red-50 text-red-700 px-4 py-2 rounded-lg text-sm mb-4">
+            <div className="bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 px-4 py-2 rounded-lg text-sm mb-4">
               {error}
             </div>
           )}
@@ -792,7 +802,7 @@ function LoginPage({ onLogin }: { onLogin: (u: User) => void }) {
             {loading ? "در حال ورود..." : "ورود به سیستم"}
           </button>
 
-          <div className="mt-4 text-xs text-gray-400 text-center">
+          <div className="mt-4 text-xs text-gray-400 dark:text-gray-500 text-center">
             <p>ایمیل: admin@company.ir</p>
             <p>رمز عبور: admin123</p>
           </div>
@@ -817,7 +827,7 @@ function DashboardPage() {
   }, []);
 
   if (loading) return <Spinner />;
-  if (!data) return <div>خطا در بارگذاری</div>;
+  if (!data) return <div className="dark:text-white">خطا در بارگذاری</div>;
 
   return (
     <div className="space-y-6">
@@ -839,8 +849,8 @@ function DashboardPage() {
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl shadow-sm border p-5">
-          <h3 className="font-bold text-gray-800 mb-4">📊 درآمد و هزینه ماهانه</h3>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5">
+          <h3 className="font-bold text-gray-800 dark:text-white mb-4">📊 درآمد و هزینه ماهانه</h3>
           <BarChart
             data={data.monthlyChartData.map((m) => ({
               label: m.month,
@@ -849,18 +859,18 @@ function DashboardPage() {
             }))}
           />
           <div className="flex gap-4 justify-center mt-3 text-xs">
-            <span className="flex items-center gap-1"><span className="w-3 h-3 bg-emerald-500 rounded" /> درآمد (میلیون)</span>
-            <span className="flex items-center gap-1"><span className="w-3 h-3 bg-red-500 rounded" /> هزینه (میلیون)</span>
+            <span className="flex items-center gap-1 text-gray-700 dark:text-gray-300"><span className="w-3 h-3 bg-emerald-500 rounded" /> درآمد (میلیون)</span>
+            <span className="flex items-center gap-1 text-gray-700 dark:text-gray-300"><span className="w-3 h-3 bg-red-500 rounded" /> هزینه (میلیون)</span>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border p-5">
-          <h3 className="font-bold text-gray-800 mb-4">📊 دسته‌بندی هزینه‌ها</h3>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5">
+          <h3 className="font-bold text-gray-800 dark:text-white mb-4">📊 دسته‌بندی هزینه‌ها</h3>
           <PieChart data={data.expenseByCategory} size={220} />
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border p-5">
-          <h3 className="font-bold text-gray-800 mb-4">📈 روند سود</h3>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5">
+          <h3 className="font-bold text-gray-800 dark:text-white mb-4">📈 روند سود</h3>
           <LineChart
             data={data.monthlyChartData.map((m) => ({
               label: m.month,
@@ -869,19 +879,19 @@ function DashboardPage() {
           />
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border p-5">
-          <h3 className="font-bold text-gray-800 mb-4">🔄 آخرین تراکنش‌ها</h3>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5">
+          <h3 className="font-bold text-gray-800 dark:text-white mb-4">🔄 آخرین تراکنش‌ها</h3>
           <div className="space-y-2 max-h-64 overflow-y-auto">
             {[...data.recentIncome.map((r: any) => ({ ...r, _type: "income" })), ...data.recentExpenses.map((r: any) => ({ ...r, _type: "expense" }))]
               .sort((a: any, b: any) => new Date(b.createdAt || b.created_at).getTime() - new Date(a.createdAt || a.created_at).getTime())
               .slice(0, 8)
               .map((t: any, i: number) => (
-                <div key={i} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
+                <div key={i} className="flex items-center justify-between py-2 border-b border-gray-50 dark:border-gray-700 last:border-0">
                   <div className="flex items-center gap-2">
                     <span className={`w-2 h-2 rounded-full ${t._type === "income" ? "bg-green-500" : "bg-red-500"}`} />
-                    <span className="text-sm">{t.title}</span>
+                    <span className="text-sm dark:text-gray-200">{t.title}</span>
                   </div>
-                  <span className={`text-sm font-medium ${t._type === "income" ? "text-green-600" : "text-red-600"}`}>
+                  <span className={`text-sm font-medium ${t._type === "income" ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
                     {t._type === "income" ? "+" : "-"}{formatCurrency(t.totalAmount || t.total_amount)}
                   </span>
                 </div>
@@ -963,49 +973,49 @@ function EmployeesPage() {
           placeholder="جستجو..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="border border-gray-200 rounded-lg px-4 py-2 text-sm w-64 bg-gray-50"
+          className="border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-2 text-sm w-64 bg-gray-50 dark:bg-gray-700 dark:text-white"
         />
       </div>
 
       {loading ? (
         <Spinner />
       ) : (
-        <div className="bg-white rounded-xl shadow-sm border overflow-x-auto">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 dark:bg-gray-900/50">
               <tr>
-                <th className="px-4 py-3 text-right font-medium text-gray-600">نام</th>
-                <th className="px-4 py-3 text-right font-medium text-gray-600">بخش</th>
-                <th className="px-4 py-3 text-right font-medium text-gray-600">سمت</th>
-                <th className="px-4 py-3 text-right font-medium text-gray-600">حقوق</th>
-                <th className="px-4 py-3 text-right font-medium text-gray-600">تلفن</th>
-                <th className="px-4 py-3 text-right font-medium text-gray-600">وضعیت</th>
-                <th className="px-4 py-3 text-right font-medium text-gray-600">عملیات</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-400">نام</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-400">بخش</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-400">سمت</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-400">حقوق</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-400">تلفن</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-400">وضعیت</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-400">عملیات</th>
               </tr>
             </thead>
             <tbody>
               {employees.map((emp) => (
-                <tr key={emp.id} className="border-t hover:bg-gray-50 transition-colors">
-                  <td className="px-4 py-3 font-medium">{emp.firstName} {emp.lastName}</td>
-                  <td className="px-4 py-3 text-gray-600">{emp.department || "-"}</td>
-                  <td className="px-4 py-3 text-gray-600">{emp.position || "-"}</td>
-                  <td className="px-4 py-3">{formatCurrency(emp.salary)}</td>
-                  <td className="px-4 py-3 text-gray-600">{emp.phone ? toPersian(emp.phone) : "-"}</td>
+                <tr key={emp.id} className="border-t border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                  <td className="px-4 py-3 font-medium dark:text-white">{emp.firstName} {emp.lastName}</td>
+                  <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{emp.department || "-"}</td>
+                  <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{emp.position || "-"}</td>
+                  <td className="px-4 py-3 dark:text-gray-200">{formatCurrency(emp.salary)}</td>
+                  <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{emp.phone ? toPersian(emp.phone) : "-"}</td>
                   <td className="px-4 py-3">
-                    <span className={`px-2 py-1 rounded-full text-xs ${emp.status === "active" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                    <span className={`px-2 py-1 rounded-full text-xs ${emp.status === "active" ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300" : "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"}`}>
                       {emp.status === "active" ? "فعال" : "غیرفعال"}
                     </span>
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex gap-2">
-                      <button onClick={() => openEdit(emp)} className="text-blue-600 hover:text-blue-800 text-xs">ویرایش</button>
-                      <button onClick={() => handleDelete(emp.id)} className="text-red-600 hover:text-red-800 text-xs">حذف</button>
+                      <button onClick={() => openEdit(emp)} className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-xs">ویرایش</button>
+                      <button onClick={() => handleDelete(emp.id)} className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 text-xs">حذف</button>
                     </div>
                   </td>
                 </tr>
               ))}
               {employees.length === 0 && (
-                <tr><td colSpan={7} className="text-center py-8 text-gray-400">کارمندی یافت نشد</td></tr>
+                <tr><td colSpan={7} className="text-center py-8 text-gray-400 dark:text-gray-500">کارمندی یافت نشد</td></tr>
               )}
             </tbody>
           </table>
@@ -1100,36 +1110,36 @@ function CategoriesPage() {
       ) : (
         <div className="grid md:grid-cols-2 gap-6">
           {/* Expense categories */}
-          <div className="bg-white rounded-xl shadow-sm border">
-            <div className="px-5 py-3 bg-red-50 rounded-t-xl border-b">
-              <h3 className="font-bold text-red-700">دسته‌بندی هزینه‌ها</h3>
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+            <div className="px-5 py-3 bg-red-50 dark:bg-red-900/20 rounded-t-xl border-b border-gray-100 dark:border-gray-700">
+              <h3 className="font-bold text-red-700 dark:text-red-300">دسته‌بندی هزینه‌ها</h3>
             </div>
             <div className="p-4 space-y-2">
               {expenseCategories.map((cat) => (
-                <div key={cat.id} className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg">
+                <div key={cat.id} className="flex items-center justify-between py-2 px-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                   <div className="flex items-center gap-2">
                     <span>{cat.icon || "📋"}</span>
-                    <span className="text-sm font-medium">{cat.name}</span>
+                    <span className="text-sm font-medium dark:text-gray-200">{cat.name}</span>
                   </div>
-                  <button onClick={() => handleDelete(cat.id)} className="text-red-500 hover:text-red-700 text-xs">حذف</button>
+                  <button onClick={() => handleDelete(cat.id)} className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-xs">حذف</button>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Income categories */}
-          <div className="bg-white rounded-xl shadow-sm border">
-            <div className="px-5 py-3 bg-green-50 rounded-t-xl border-b">
-              <h3 className="font-bold text-green-700">دسته‌بندی درآمدها</h3>
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+            <div className="px-5 py-3 bg-green-50 dark:bg-green-900/20 rounded-t-xl border-b border-gray-100 dark:border-gray-700">
+              <h3 className="font-bold text-green-700 dark:text-green-300">دسته‌بندی درآمدها</h3>
             </div>
             <div className="p-4 space-y-2">
               {incomeCategories.map((cat) => (
-                <div key={cat.id} className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg">
+                <div key={cat.id} className="flex items-center justify-between py-2 px-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                   <div className="flex items-center gap-2">
                     <span>{cat.icon || "📋"}</span>
-                    <span className="text-sm font-medium">{cat.name}</span>
+                    <span className="text-sm font-medium dark:text-gray-200">{cat.name}</span>
                   </div>
-                  <button onClick={() => handleDelete(cat.id)} className="text-red-500 hover:text-red-700 text-xs">حذف</button>
+                  <button onClick={() => handleDelete(cat.id)} className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-xs">حذف</button>
                 </div>
               ))}
             </div>
@@ -1233,7 +1243,7 @@ function IncomePage() {
           <Button variant="secondary" onClick={() => window.open("/api/export?type=income", "_blank")}>📥 خروجی اکسل</Button>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-sm bg-green-100 text-green-700 px-3 py-1 rounded-lg font-medium">
+          <span className="text-sm bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-3 py-1 rounded-lg font-medium">
             مجموع: {formatCurrency(sum)}
           </span>
           <input
@@ -1241,44 +1251,44 @@ function IncomePage() {
             placeholder="جستجو..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="border border-gray-200 rounded-lg px-4 py-2 text-sm w-48 bg-gray-50"
+            className="border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-2 text-sm w-48 bg-gray-50 dark:bg-gray-700 dark:text-white"
           />
         </div>
       </div>
 
       {loading ? <Spinner /> : (
-        <div className="bg-white rounded-xl shadow-sm border overflow-x-auto">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 dark:bg-gray-900/50">
               <tr>
-                <th className="px-4 py-3 text-right font-medium text-gray-600">عنوان</th>
-                <th className="px-4 py-3 text-right font-medium text-gray-600">دسته‌بندی</th>
-                <th className="px-4 py-3 text-right font-medium text-gray-600">مبلغ</th>
-                <th className="px-4 py-3 text-right font-medium text-gray-600">مالیات</th>
-                <th className="px-4 py-3 text-right font-medium text-gray-600">مبلغ کل</th>
-                <th className="px-4 py-3 text-right font-medium text-gray-600">تاریخ</th>
-                <th className="px-4 py-3 text-right font-medium text-gray-600">عملیات</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-400">عنوان</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-400">دسته‌بندی</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-400">مبلغ</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-400">مالیات</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-400">مبلغ کل</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-400">تاریخ</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-400">عملیات</th>
               </tr>
             </thead>
             <tbody>
               {records.map((r) => (
-                <tr key={r.id} className="border-t hover:bg-gray-50">
-                  <td className="px-4 py-3 font-medium">{r.title}</td>
-                  <td className="px-4 py-3 text-gray-600">{r.categoryName || "-"}</td>
-                  <td className="px-4 py-3 text-green-600">{formatCurrency(r.amount)}</td>
-                  <td className="px-4 py-3 text-gray-500">{formatCurrency(r.taxAmount)}</td>
-                  <td className="px-4 py-3 font-medium text-green-700">{formatCurrency(r.totalAmount)}</td>
-                  <td className="px-4 py-3 text-gray-600">{toJalali(r.date)}</td>
+                <tr key={r.id} className="border-t border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                  <td className="px-4 py-3 font-medium dark:text-white">{r.title}</td>
+                  <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{r.categoryName || "-"}</td>
+                  <td className="px-4 py-3 text-green-600 dark:text-green-400">{formatCurrency(r.amount)}</td>
+                  <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{formatCurrency(r.taxAmount)}</td>
+                  <td className="px-4 py-3 font-medium text-green-700 dark:text-green-300">{formatCurrency(r.totalAmount)}</td>
+                  <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{toJalali(r.date)}</td>
                   <td className="px-4 py-3">
                     <div className="flex gap-2">
-                      <button onClick={() => openEdit(r)} className="text-blue-600 text-xs">ویرایش</button>
-                      <button onClick={() => handleDelete(r.id)} className="text-red-600 text-xs">حذف</button>
+                      <button onClick={() => openEdit(r)} className="text-blue-600 dark:text-blue-400 text-xs">ویرایش</button>
+                      <button onClick={() => handleDelete(r.id)} className="text-red-600 dark:text-red-400 text-xs">حذف</button>
                     </div>
                   </td>
                 </tr>
               ))}
               {records.length === 0 && (
-                <tr><td colSpan={7} className="text-center py-8 text-gray-400">رکوردی یافت نشد</td></tr>
+                <tr><td colSpan={7} className="text-center py-8 text-gray-400 dark:text-gray-500">رکوردی یافت نشد</td></tr>
               )}
             </tbody>
           </table>
@@ -1301,9 +1311,9 @@ function IncomePage() {
           <Input label="مبلغ (ریال)" type="number" required value={form.amount || ""} onChange={(e) => setForm({ ...form, amount: e.target.value })} />
           <Input label="نرخ مالیات (%)" type="number" value={form.taxRate || 9} onChange={(e) => setForm({ ...form, taxRate: e.target.value })} />
           {form.amount && (
-            <div className="bg-blue-50 rounded-lg p-3 text-sm mb-3">
-              <div className="flex justify-between"><span>مالیات:</span><span>{formatCurrency(Math.floor(Number(form.amount) * (Number(form.taxRate) || 9) / 100))}</span></div>
-              <div className="flex justify-between font-bold mt-1"><span>مبلغ کل:</span><span>{formatCurrency(Number(form.amount) + Math.floor(Number(form.amount) * (Number(form.taxRate) || 9) / 100))}</span></div>
+            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 text-sm mb-3">
+              <div className="flex justify-between dark:text-gray-200"><span>مالیات:</span><span>{formatCurrency(Math.floor(Number(form.amount) * (Number(form.taxRate) || 9) / 100))}</span></div>
+              <div className="flex justify-between font-bold mt-1 dark:text-white"><span>مبلغ کل:</span><span>{formatCurrency(Number(form.amount) + Math.floor(Number(form.amount) * (Number(form.taxRate) || 9) / 100))}</span></div>
             </div>
           )}
           <Input label="تاریخ" type="date" required value={form.date || ""} onChange={(e) => setForm({ ...form, date: e.target.value })} />
@@ -1394,7 +1404,7 @@ function ExpensesPage() {
           <Button variant="secondary" onClick={() => window.open("/api/export?type=expenses", "_blank")}>📥 خروجی اکسل</Button>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-sm bg-red-100 text-red-700 px-3 py-1 rounded-lg font-medium">
+          <span className="text-sm bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 px-3 py-1 rounded-lg font-medium">
             مجموع: {formatCurrency(sum)}
           </span>
           <input
@@ -1402,46 +1412,46 @@ function ExpensesPage() {
             placeholder="جستجو..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="border border-gray-200 rounded-lg px-4 py-2 text-sm w-48 bg-gray-50"
+            className="border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-2 text-sm w-48 bg-gray-50 dark:bg-gray-700 dark:text-white"
           />
         </div>
       </div>
 
       {loading ? <Spinner /> : (
-        <div className="bg-white rounded-xl shadow-sm border overflow-x-auto">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 dark:bg-gray-900/50">
               <tr>
-                <th className="px-4 py-3 text-right font-medium text-gray-600">عنوان</th>
-                <th className="px-4 py-3 text-right font-medium text-gray-600">دسته‌بندی</th>
-                <th className="px-4 py-3 text-right font-medium text-gray-600">مبلغ</th>
-                <th className="px-4 py-3 text-right font-medium text-gray-600">مالیات</th>
-                <th className="px-4 py-3 text-right font-medium text-gray-600">مبلغ کل</th>
-                <th className="px-4 py-3 text-right font-medium text-gray-600">کارمند</th>
-                <th className="px-4 py-3 text-right font-medium text-gray-600">تاریخ</th>
-                <th className="px-4 py-3 text-right font-medium text-gray-600">عملیات</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-400">عنوان</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-400">دسته‌بندی</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-400">مبلغ</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-400">مالیات</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-400">مبلغ کل</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-400">کارمند</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-400">تاریخ</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-400">عملیات</th>
               </tr>
             </thead>
             <tbody>
               {records.map((r) => (
-                <tr key={r.id} className="border-t hover:bg-gray-50">
-                  <td className="px-4 py-3 font-medium">{r.title}</td>
-                  <td className="px-4 py-3 text-gray-600">{r.categoryName || "-"}</td>
-                  <td className="px-4 py-3 text-red-600">{formatCurrency(r.amount)}</td>
-                  <td className="px-4 py-3 text-gray-500">{formatCurrency(r.taxAmount)}</td>
-                  <td className="px-4 py-3 font-medium text-red-700">{formatCurrency(r.totalAmount)}</td>
-                  <td className="px-4 py-3 text-gray-600">{r.employeeName || "-"}</td>
-                  <td className="px-4 py-3 text-gray-600">{toJalali(r.date)}</td>
+                <tr key={r.id} className="border-t border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                  <td className="px-4 py-3 font-medium dark:text-white">{r.title}</td>
+                  <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{r.categoryName || "-"}</td>
+                  <td className="px-4 py-3 text-red-600 dark:text-red-400">{formatCurrency(r.amount)}</td>
+                  <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{formatCurrency(r.taxAmount)}</td>
+                  <td className="px-4 py-3 font-medium text-red-700 dark:text-red-300">{formatCurrency(r.totalAmount)}</td>
+                  <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{r.employeeName || "-"}</td>
+                  <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{toJalali(r.date)}</td>
                   <td className="px-4 py-3">
                     <div className="flex gap-2">
-                      <button onClick={() => openEdit(r)} className="text-blue-600 text-xs">ویرایش</button>
-                      <button onClick={() => handleDelete(r.id)} className="text-red-600 text-xs">حذف</button>
+                      <button onClick={() => openEdit(r)} className="text-blue-600 dark:text-blue-400 text-xs">ویرایش</button>
+                      <button onClick={() => handleDelete(r.id)} className="text-red-600 dark:text-red-400 text-xs">حذف</button>
                     </div>
                   </td>
                 </tr>
               ))}
               {records.length === 0 && (
-                <tr><td colSpan={8} className="text-center py-8 text-gray-400">رکوردی یافت نشد</td></tr>
+                <tr><td colSpan={8} className="text-center py-8 text-gray-400 dark:text-gray-500">رکوردی یافت نشد</td></tr>
               )}
             </tbody>
           </table>
@@ -1464,9 +1474,9 @@ function ExpensesPage() {
           <Input label="مبلغ (ریال)" type="number" required value={form.amount || ""} onChange={(e) => setForm({ ...form, amount: e.target.value })} />
           <Input label="نرخ مالیات (%)" type="number" value={form.taxRate || 9} onChange={(e) => setForm({ ...form, taxRate: e.target.value })} />
           {form.amount && (
-            <div className="bg-blue-50 rounded-lg p-3 text-sm mb-3">
-              <div className="flex justify-between"><span>مالیات:</span><span>{formatCurrency(Math.floor(Number(form.amount) * (Number(form.taxRate) || 9) / 100))}</span></div>
-              <div className="flex justify-between font-bold mt-1"><span>مبلغ کل:</span><span>{formatCurrency(Number(form.amount) + Math.floor(Number(form.amount) * (Number(form.taxRate) || 9) / 100))}</span></div>
+            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 text-sm mb-3">
+              <div className="flex justify-between dark:text-gray-200"><span>مالیات:</span><span>{formatCurrency(Math.floor(Number(form.amount) * (Number(form.taxRate) || 9) / 100))}</span></div>
+              <div className="flex justify-between font-bold mt-1 dark:text-white"><span>مبلغ کل:</span><span>{formatCurrency(Number(form.amount) + Math.floor(Number(form.amount) * (Number(form.taxRate) || 9) / 100))}</span></div>
             </div>
           )}
           <Select
@@ -1549,39 +1559,39 @@ function SalaryPage() {
       </div>
 
       {loading ? <Spinner /> : (
-        <div className="bg-white rounded-xl shadow-sm border overflow-x-auto">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 dark:bg-gray-900/50">
               <tr>
-                <th className="px-3 py-3 text-right font-medium text-gray-600 text-xs">کارمند</th>
-                <th className="px-3 py-3 text-right font-medium text-gray-600 text-xs">بخش</th>
-                <th className="px-3 py-3 text-right font-medium text-gray-600 text-xs">حقوق پایه</th>
-                <th className="px-3 py-3 text-right font-medium text-gray-600 text-xs">پاداش</th>
-                <th className="px-3 py-3 text-right font-medium text-gray-600 text-xs">اضافه‌کار</th>
-                <th className="px-3 py-3 text-right font-medium text-gray-600 text-xs">کسورات</th>
-                <th className="px-3 py-3 text-right font-medium text-gray-600 text-xs">بیمه</th>
-                <th className="px-3 py-3 text-right font-medium text-gray-600 text-xs">مالیات</th>
-                <th className="px-3 py-3 text-right font-medium text-gray-600 text-xs">خالص</th>
-                <th className="px-3 py-3 text-right font-medium text-gray-600 text-xs">تاریخ</th>
+                <th className="px-3 py-3 text-right font-medium text-gray-600 dark:text-gray-400 text-xs">کارمند</th>
+                <th className="px-3 py-3 text-right font-medium text-gray-600 dark:text-gray-400 text-xs">بخش</th>
+                <th className="px-3 py-3 text-right font-medium text-gray-600 dark:text-gray-400 text-xs">حقوق پایه</th>
+                <th className="px-3 py-3 text-right font-medium text-gray-600 dark:text-gray-400 text-xs">پاداش</th>
+                <th className="px-3 py-3 text-right font-medium text-gray-600 dark:text-gray-400 text-xs">اضافه‌کار</th>
+                <th className="px-3 py-3 text-right font-medium text-gray-600 dark:text-gray-400 text-xs">کسورات</th>
+                <th className="px-3 py-3 text-right font-medium text-gray-600 dark:text-gray-400 text-xs">بیمه</th>
+                <th className="px-3 py-3 text-right font-medium text-gray-600 dark:text-gray-400 text-xs">مالیات</th>
+                <th className="px-3 py-3 text-right font-medium text-gray-600 dark:text-gray-400 text-xs">خالص</th>
+                <th className="px-3 py-3 text-right font-medium text-gray-600 dark:text-gray-400 text-xs">تاریخ</th>
               </tr>
             </thead>
             <tbody>
               {records.map((r) => (
-                <tr key={r.id} className="border-t hover:bg-gray-50">
-                  <td className="px-3 py-3 font-medium text-xs">{r.employeeName}</td>
-                  <td className="px-3 py-3 text-gray-600 text-xs">{r.department || "-"}</td>
-                  <td className="px-3 py-3 text-xs">{formatCurrency(r.baseSalary)}</td>
-                  <td className="px-3 py-3 text-green-600 text-xs">{formatCurrency(r.bonus)}</td>
-                  <td className="px-3 py-3 text-blue-600 text-xs">{formatCurrency(r.overtime)}</td>
-                  <td className="px-3 py-3 text-red-600 text-xs">{formatCurrency(r.deduction)}</td>
-                  <td className="px-3 py-3 text-orange-600 text-xs">{formatCurrency(r.insurance)}</td>
-                  <td className="px-3 py-3 text-purple-600 text-xs">{formatCurrency(r.taxAmount)}</td>
-                  <td className="px-3 py-3 font-bold text-xs">{formatCurrency(r.netSalary)}</td>
-                  <td className="px-3 py-3 text-gray-600 text-xs">{toJalali(r.paymentDate)}</td>
+                <tr key={r.id} className="border-t border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                  <td className="px-3 py-3 font-medium text-xs dark:text-white">{r.employeeName}</td>
+                  <td className="px-3 py-3 text-gray-600 dark:text-gray-400 text-xs">{r.department || "-"}</td>
+                  <td className="px-3 py-3 text-xs dark:text-gray-200">{formatCurrency(r.baseSalary)}</td>
+                  <td className="px-3 py-3 text-green-600 dark:text-green-400 text-xs">{formatCurrency(r.bonus)}</td>
+                  <td className="px-3 py-3 text-blue-600 dark:text-blue-400 text-xs">{formatCurrency(r.overtime)}</td>
+                  <td className="px-3 py-3 text-red-600 dark:text-red-400 text-xs">{formatCurrency(r.deduction)}</td>
+                  <td className="px-3 py-3 text-orange-600 dark:text-orange-400 text-xs">{formatCurrency(r.insurance)}</td>
+                  <td className="px-3 py-3 text-purple-600 dark:text-purple-400 text-xs">{formatCurrency(r.taxAmount)}</td>
+                  <td className="px-3 py-3 font-bold text-xs dark:text-white">{formatCurrency(r.netSalary)}</td>
+                  <td className="px-3 py-3 text-gray-600 dark:text-gray-400 text-xs">{toJalali(r.paymentDate)}</td>
                 </tr>
               ))}
               {records.length === 0 && (
-                <tr><td colSpan={10} className="text-center py-8 text-gray-400">رکوردی یافت نشد</td></tr>
+                <tr><td colSpan={10} className="text-center py-8 text-gray-400 dark:text-gray-500">رکوردی یافت نشد</td></tr>
               )}
             </tbody>
           </table>
@@ -1609,10 +1619,10 @@ function SalaryPage() {
           <TextArea label="توضیحات" value={form.description || ""} onChange={(e) => setForm({ ...form, description: e.target.value })} />
 
           {form.baseSalary && (
-            <div className="bg-blue-50 rounded-lg p-3 text-sm my-3 space-y-1">
-              <div className="flex justify-between"><span>ناخالص:</span><span>{formatCurrency(calcNet().gross)}</span></div>
-              <div className="flex justify-between text-purple-600"><span>مالیات:</span><span>{formatCurrency(calcNet().tax)}</span></div>
-              <div className="flex justify-between font-bold border-t pt-1"><span>خالص دریافتی:</span><span>{formatCurrency(calcNet().net)}</span></div>
+            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 text-sm my-3 space-y-1">
+              <div className="flex justify-between dark:text-gray-200"><span>ناخالص:</span><span>{formatCurrency(calcNet().gross)}</span></div>
+              <div className="flex justify-between text-purple-600 dark:text-purple-400"><span>مالیات:</span><span>{formatCurrency(calcNet().tax)}</span></div>
+              <div className="flex justify-between font-bold border-t border-gray-200 dark:border-gray-600 pt-1 dark:text-white"><span>خالص دریافتی:</span><span>{formatCurrency(calcNet().net)}</span></div>
             </div>
           )}
 
@@ -1673,29 +1683,29 @@ function BonusesPage() {
       </div>
 
       {loading ? <Spinner /> : (
-        <div className="bg-white rounded-xl shadow-sm border overflow-x-auto">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 dark:bg-gray-900/50">
               <tr>
-                <th className="px-4 py-3 text-right font-medium text-gray-600">کارمند</th>
-                <th className="px-4 py-3 text-right font-medium text-gray-600">مبلغ</th>
-                <th className="px-4 py-3 text-right font-medium text-gray-600">دلیل</th>
-                <th className="px-4 py-3 text-right font-medium text-gray-600">تاریخ</th>
-                <th className="px-4 py-3 text-right font-medium text-gray-600">توضیحات</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-400">کارمند</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-400">مبلغ</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-400">دلیل</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-400">تاریخ</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-400">توضیحات</th>
               </tr>
             </thead>
             <tbody>
               {records.map((r) => (
-                <tr key={r.id} className="border-t hover:bg-gray-50">
-                  <td className="px-4 py-3 font-medium">{r.employeeName}</td>
-                  <td className="px-4 py-3 text-green-600 font-medium">{formatCurrency(r.amount)}</td>
-                  <td className="px-4 py-3 text-gray-600">{r.reason || "-"}</td>
-                  <td className="px-4 py-3 text-gray-600">{toJalali(r.date)}</td>
-                  <td className="px-4 py-3 text-gray-500 text-xs">{r.description || "-"}</td>
+                <tr key={r.id} className="border-t border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                  <td className="px-4 py-3 font-medium dark:text-white">{r.employeeName}</td>
+                  <td className="px-4 py-3 text-green-600 dark:text-green-400 font-medium">{formatCurrency(r.amount)}</td>
+                  <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{r.reason || "-"}</td>
+                  <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{toJalali(r.date)}</td>
+                  <td className="px-4 py-3 text-gray-500 dark:text-gray-400 text-xs">{r.description || "-"}</td>
                 </tr>
               ))}
               {records.length === 0 && (
-                <tr><td colSpan={5} className="text-center py-8 text-gray-400">رکوردی یافت نشد</td></tr>
+                <tr><td colSpan={5} className="text-center py-8 text-gray-400 dark:text-gray-500">رکوردی یافت نشد</td></tr>
               )}
             </tbody>
           </table>
@@ -1754,7 +1764,7 @@ function ReportsPage() {
   return (
     <div className="space-y-6">
       {/* Filters */}
-      <div className="bg-white rounded-xl shadow-sm border p-4 flex flex-wrap gap-3 items-end">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 flex flex-wrap gap-3 items-end">
         <Input label="از تاریخ" type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
         <Input label="تا تاریخ" type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
         <Button onClick={loadReport}>تولید گزارش</Button>
@@ -1771,9 +1781,9 @@ function ReportsPage() {
       </div>
 
       {/* Persian Analysis */}
-      <div className="bg-white rounded-xl shadow-sm border p-5">
-        <h3 className="font-bold text-gray-800 mb-4">📝 تحلیل هوشمند مالی</h3>
-        <div className="space-y-3 text-sm text-gray-700 leading-7">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5">
+        <h3 className="font-bold text-gray-800 dark:text-white mb-4">📝 تحلیل هوشمند مالی</h3>
+        <div className="space-y-3 text-sm text-gray-700 dark:text-gray-300 leading-7">
           <p>• مجموع درآمد شرکت در بازه زمانی انتخاب شده برابر با <strong>{formatCurrency(s.totalIncome)}</strong> می‌باشد.</p>
           <p>• مجموع هزینه‌های شرکت برابر با <strong>{formatCurrency(s.totalExpense)}</strong> ثبت شده است.</p>
           <p>• سود خالص شرکت برابر با <strong>{formatCurrency(s.netProfit)}</strong> می‌باشد
@@ -1790,16 +1800,16 @@ function ReportsPage() {
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl shadow-sm border p-5">
-          <h3 className="font-bold text-gray-800 mb-4">📊 دسته‌بندی هزینه‌ها</h3>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5">
+          <h3 className="font-bold text-gray-800 dark:text-white mb-4">📊 دسته‌بندی هزینه‌ها</h3>
           <PieChart data={data.expenseByCategory} size={220} />
         </div>
-        <div className="bg-white rounded-xl shadow-sm border p-5">
-          <h3 className="font-bold text-gray-800 mb-4">📊 دسته‌بندی درآمدها</h3>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5">
+          <h3 className="font-bold text-gray-800 dark:text-white mb-4">📊 دسته‌بندی درآمدها</h3>
           <PieChart data={data.incomeByCategory} size={220} />
         </div>
-        <div className="bg-white rounded-xl shadow-sm border p-5">
-          <h3 className="font-bold text-gray-800 mb-4">👥 هزینه بخش‌ها</h3>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5">
+          <h3 className="font-bold text-gray-800 dark:text-white mb-4">👥 هزینه بخش‌ها</h3>
           <BarChart
             data={data.departmentExpense.map((d) => ({
               label: d.name,
@@ -1807,21 +1817,21 @@ function ReportsPage() {
               colors: ["#6366f1"],
             }))}
           />
-          <p className="text-xs text-gray-400 text-center mt-2">مبالغ به میلیون ریال</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500 text-center mt-2">مبالغ به میلیون ریال</p>
         </div>
-        <div className="bg-white rounded-xl shadow-sm border p-5">
-          <h3 className="font-bold text-gray-800 mb-4">🏆 پردرآمدترین کارکنان</h3>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5">
+          <h3 className="font-bold text-gray-800 dark:text-white mb-4">🏆 پردرآمدترین کارکنان</h3>
           <div className="space-y-3">
             {data.topEmployees.map((emp, i) => (
-              <div key={i} className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg">
+              <div key={i} className="flex items-center justify-between py-2 px-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                 <div className="flex items-center gap-3">
-                  <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold">{toPersian(i + 1)}</span>
+                  <span className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 flex items-center justify-center text-xs font-bold">{toPersian(i + 1)}</span>
                   <div>
-                    <p className="text-sm font-medium">{emp.name}</p>
-                    <p className="text-xs text-gray-500">{emp.department}</p>
+                    <p className="text-sm font-medium dark:text-white">{emp.name}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{emp.department}</p>
                   </div>
                 </div>
-                <span className="text-sm font-medium">{formatCurrency(emp.totalPaid)}</span>
+                <span className="text-sm font-medium dark:text-gray-200">{formatCurrency(emp.totalPaid)}</span>
               </div>
             ))}
           </div>
@@ -1863,8 +1873,8 @@ function SettingsPage() {
 
   return (
     <div className="max-w-2xl">
-      <div className="bg-white rounded-xl shadow-sm border p-6">
-        <h3 className="text-lg font-bold mb-6">تنظیمات سیستم</h3>
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+        <h3 className="text-lg font-bold mb-6 dark:text-white">تنظیمات سیستم</h3>
 
         <Input
           label="نام شرکت"
@@ -1903,15 +1913,15 @@ function SettingsPage() {
             {saving ? "در حال ذخیره..." : "ذخیره تنظیمات"}
           </Button>
           {saved && (
-            <span className="text-green-600 text-sm">✅ تنظیمات با موفقیت ذخیره شد</span>
+            <span className="text-green-600 dark:text-green-400 text-sm">✅ تنظیمات با موفقیت ذخیره شد</span>
           )}
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border p-6 mt-6">
-        <h3 className="text-lg font-bold mb-4">اطلاعات سیستم</h3>
-        <div className="space-y-2 text-sm text-gray-600">
-          <p>نسخه: <span className="font-medium">۱.۰.۰</span></p>
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 mt-6">
+        <h3 className="text-lg font-bold mb-4 dark:text-white">اطلاعات سیستم</h3>
+        <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+          <p>نسخه: <span className="font-medium dark:text-gray-200">۱.۰.۰</span></p>
           <p>پایگاه داده: PostgreSQL</p>
           <p>فریم‌ورک: Next.js + TypeScript</p>
           <p>واحد پول: ریال ایران (IRR)</p>
