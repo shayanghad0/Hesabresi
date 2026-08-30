@@ -2,8 +2,6 @@
 
 import { useState, useEffect, useCallback, type ReactNode, type FormEvent } from "react";
 import { useTheme } from "@/providers/ThemeProvider";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
 
 // ============================================================
 // Types
@@ -632,7 +630,7 @@ export default function App() {
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:static inset-y-0 right-0 z-50 w-64 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 shadow-lg lg:shadow-none transform transition-transform duration-300 ${
+        className={`no-print fixed lg:static inset-y-0 right-0 z-50 w-64 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 shadow-lg lg:shadow-none transform transition-transform duration-300 ${
           sidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"
         }`}
       >
@@ -688,7 +686,7 @@ export default function App() {
       {/* Main */}
       <main className="flex-1 overflow-y-auto dark:bg-gray-900">
         {/* Top bar */}
-        <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-5 py-3 flex items-center justify-between sticky top-0 z-30">
+        <header className="no-print bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-5 py-3 flex items-center justify-between sticky top-0 z-30">
           <button
             className="lg:hidden text-gray-600 dark:text-gray-300 text-2xl"
             onClick={() => setSidebarOpen(true)}
@@ -1770,67 +1768,97 @@ function ReportsPage() {
 
   const exportPDF = () => {
     if (!data) return;
-    const doc = new jsPDF({ orientation: "p", unit: "mm", format: "a4" });
-    doc.setFont("helvetica");
-
-    doc.setFontSize(18);
-    doc.text("Financial Report", 14, 20);
-    doc.setFontSize(10);
-    doc.text(`Date Range: ${dateFrom} - ${dateTo}`, 14, 28);
-
     const s = data.summary;
-    doc.setFontSize(12);
-    doc.text("Summary", 14, 40);
-    autoTable(doc, {
-      startY: 44,
-      head: [["Metric", "Value (IRR)"]],
-      body: [
-        ["Total Income", s.totalIncome.toLocaleString()],
-        ["Total Expense", s.totalExpense.toLocaleString()],
-        ["Net Profit", s.netProfit.toLocaleString()],
-        ["Total Tax", s.totalTax.toLocaleString()],
-        ["Salary Paid", s.totalSalaryPaid.toLocaleString()],
-        ["Bonuses", s.totalBonuses.toLocaleString()],
-      ],
-      theme: "grid",
-    });
+    const profitPercent = s.totalIncome > 0 ? Math.round((s.netProfit / s.totalIncome) * 100) : 0;
+    const salaryPercent = s.totalExpense > 0 ? Math.round((s.totalSalaryPaid / s.totalExpense) * 100) : 0;
+    const expenseTotal = data.expenseByCategory.reduce((a, b) => a + b.value, 0);
+    const incomeTotal = data.incomeByCategory.reduce((a, b) => a + b.value, 0);
 
-    const y1 = (doc as any).lastAutoTable.finalY + 14;
-    doc.setFontSize(12);
-    doc.text("Expense by Category", 14, y1);
-    autoTable(doc, {
-      startY: y1 + 4,
-      head: [["Category", "Amount (IRR)"]],
-      body: data.expenseByCategory.map((c) => [c.name, c.value.toLocaleString()]),
-      theme: "grid",
-    });
+    const win = window.open("", "_blank");
+    if (!win) return;
+    win.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
+<style>
+@import url("https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css");
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Vazirmatn",Tahoma,sans-serif;direction:rtl;background:#fff;color:#111;padding:10px;font-size:10px}
+h1{text-align:center;font-size:16px;margin-bottom:4px;color:#1e40af}
+.subtitle{text-align:center;font-size:10px;color:#666;margin-bottom:10px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px}
+.card{border:1px solid #e5e7eb;border-radius:6px;padding:6px;text-align:center}
+.card-icon{font-size:16px}
+.card-title{font-size:8px;color:#666}
+.card-value{font-size:11px;font-weight:bold;color:#111}
+.green{background:#f0fdf4;border-color:#bbf7d0}.green .card-value{color:#16a34a}
+.red{background:#fef2f2;border-color:#fecaca}.red .card-value{color:#dc2626}
+.cyan{background:#ecfeff;border-color:#a5f3fc}.cyan .card-value{color:#0891b2}
+.purple{background:#faf5ff;border-color:#e9d5ff}.purple .card-value{color:#9333ea}
+.indigo{background:#eef2ff;border-color:#c7d2fe}.indigo .card-value{color:#4f46e5}
+.yellow{background:#fefce8;border-color:#fef08a}.yellow .card-value{color:#ca8a04}
+.section{border:1px solid #e5e7eb;border-radius:6px;padding:6px;margin-bottom:8px}
+.section h3{font-size:10px;font-weight:bold;margin-bottom:4px}
+.section p{font-size:9px;line-height:1.6;margin-bottom:2px}
+.tables{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+table{width:100%;border-collapse:collapse;font-size:8px}
+th{background:#eef2ff;padding:3px 4px;text-align:right;font-weight:bold;border:1px solid #ddd}
+td{padding:2px 4px;border:1px solid #ddd}
+.cat-bar{display:flex;align-items:center;gap:4px;margin-bottom:2px;font-size:8px}
+.cat-bar-fill{height:8px;border-radius:3px}
+.cat-bar-label{min-width:60px}
+.cat-bar-pct{min-width:28px;text-align:left}
+.emp-row{display:flex;align-items:center;justify-content:space-between;padding:2px 4px;border-bottom:1px solid #eee;font-size:8px}
+.emp-rank{background:#eef2ff;border-radius:50%;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:bold;color:#4f46e5}
+.emp-name{font-weight:bold;margin-right:4px}
+.emp-dept{color:#666;font-size:7px}
+.emp-sal{font-weight:bold}
+@media print{@page{size:A4 landscape;margin:6mm}body{padding:0}}
+</style></head><body>
+<h1>گزارش مالی شرکت</h1>
+<div class="subtitle">بازه زمانی: ${dateFrom} تا ${dateTo}</div>
 
-    const y2 = (doc as any).lastAutoTable.finalY + 14;
-    doc.setFontSize(12);
-    doc.text("Income by Category", 14, y2);
-    autoTable(doc, {
-      startY: y2 + 4,
-      head: [["Category", "Amount (IRR)"]],
-      body: data.incomeByCategory.map((c) => [c.name, c.value.toLocaleString()]),
-      theme: "grid",
-    });
+<div class="grid">
+<div class="card green"><div class="card-icon">💰</div><div class="card-title">کل درآمد</div><div class="card-value">${s.totalIncome.toLocaleString("fa-IR")} ریال</div></div>
+<div class="card red"><div class="card-icon">💸</div><div class="card-title">کل هزینه</div><div class="card-value">${s.totalExpense.toLocaleString("fa-IR")} ریال</div></div>
+<div class="card cyan"><div class="card-icon">📊</div><div class="card-title">سود خالص</div><div class="card-value">${s.netProfit.toLocaleString("fa-IR")} ریال</div></div>
+<div class="card purple"><div class="card-icon">🏛️</div><div class="card-title">مجموع مالیات</div><div class="card-value">${s.totalTax.toLocaleString("fa-IR")} ریال</div></div>
+<div class="card indigo"><div class="card-icon">💳</div><div class="card-title">حقوق پرداختی</div><div class="card-value">${s.totalSalaryPaid.toLocaleString("fa-IR")} ریال</div></div>
+<div class="card yellow"><div class="card-icon">🎁</div><div class="card-title">پاداش‌ها</div><div class="card-value">${s.totalBonuses.toLocaleString("fa-IR")} ریال</div></div>
+</div>
 
-    const y3 = (doc as any).lastAutoTable.finalY + 14;
-    doc.setFontSize(12);
-    doc.text("Top Employees", 14, y3);
-    autoTable(doc, {
-      startY: y3 + 4,
-      head: [["#", "Name", "Department", "Total Paid (IRR)"]],
-      body: data.topEmployees.map((e, i) => [
-        String(i + 1),
-        e.name,
-        e.department,
-        e.totalPaid.toLocaleString(),
-      ]),
-      theme: "grid",
-    });
+<div class="section">
+<h3>📝 تحلیل هوشمند مالی</h3>
+<p>• مجموع درآمد شرکت برابر با <b>${s.totalIncome.toLocaleString("fa-IR")} ریال</b> می‌باشد.</p>
+<p>• مجموع هزینه‌ها برابر با <b>${s.totalExpense.toLocaleString("fa-IR")} ریال</b> ثبت شده است.</p>
+<p>• سود خالص برابر با <b>${s.netProfit.toLocaleString("fa-IR")} ریال</b> ${s.netProfit > 0 ? "که نشان‌دهنده عملکرد مالی مثبت است." : "که نیاز به بررسی دارد."}</p>
+<p>• هزینه حقوق <b>${salaryPercent}٪</b> از کل هزینه‌ها و حاشیه سود <b>${profitPercent}٪</b> می‌باشد.</p>
+</div>
 
-    doc.save(`report_${dateFrom}_${dateTo}.pdf`);
+<div class="tables">
+<div class="section">
+<h3>📊 دسته‌بندی هزینه‌ها</h3>
+<table><tr><th>بخش</th><th>مبلغ</th><th>درصد</th></tr>
+${data.expenseByCategory.sort((a, b) => b.value - a.value).map(c => {
+  const pct = expenseTotal > 0 ? Math.round((c.value / expenseTotal) * 100) : 0;
+  return `<tr><td>${c.name}</td><td>${c.value.toLocaleString("fa-IR")}</td><td>${pct}%</td></tr>`;
+}).join("")}
+</table></div>
+<div class="section">
+<h3>📊 دسته‌بندی درآمدها</h3>
+<table><tr><th>بخش</th><th>مبلغ</th><th>درصد</th></tr>
+${data.incomeByCategory.sort((a, b) => b.value - a.value).map(c => {
+  const pct = incomeTotal > 0 ? Math.round((c.value / incomeTotal) * 100) : 0;
+  return `<tr><td>${c.name}</td><td>${c.value.toLocaleString("fa-IR")}</td><td>${pct}%</td></tr>`;
+}).join("")}
+</table></div>
+</div>
+
+<div class="section">
+<h3>🏆 پردرآمدترین کارکنان</h3>
+${data.topEmployees.map((e, i) => `<div class="emp-row"><div style="display:flex;align-items:center;gap:4px"><span class="emp-rank">${i + 1}</span><span class="emp-name">${e.name}</span><span class="emp-dept">${e.department}</span></div><span class="emp-sal">${e.totalPaid.toLocaleString("fa-IR")} ریال</span></div>`).join("")}
+</div>
+
+</body></html>`);
+    win.document.close();
+    win.onload = () => { win.print(); };
   };
 
   const s = data?.summary;
@@ -1840,7 +1868,7 @@ function ReportsPage() {
   return (
     <div className="space-y-6">
       {/* Filters */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 flex flex-wrap gap-3 items-end">
+      <div className="no-print bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 flex flex-wrap gap-3 items-end">
         <Input label="از تاریخ" type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
         <Input label="تا تاریخ" type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
         <Button onClick={() => loadReport()} disabled={loading}>
