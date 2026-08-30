@@ -1,6 +1,6 @@
 import { db } from "@/db";
-import { income, expenses, salaryPayments, bonuses, employees } from "@/db/schema";
-import { sql } from "drizzle-orm";
+import { income, expenses, salaryPayments, bonuses, employees, categories } from "@/db/schema";
+import { sql, eq } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
 
@@ -10,7 +10,6 @@ export async function GET(request: Request) {
     const dateFrom = url.searchParams.get("dateFrom") || "2020-01-01";
     const dateTo = url.searchParams.get("dateTo") || "2030-12-31";
 
-    // Total income
     const totalInc = await db
       .select({
         total: sql<number>`COALESCE(SUM(${income.totalAmount}), 0)`,
@@ -20,7 +19,6 @@ export async function GET(request: Request) {
       .from(income)
       .where(sql`${income.date} >= ${dateFrom} AND ${income.date} <= ${dateTo}`);
 
-    // Total expense
     const totalExp = await db
       .select({
         total: sql<number>`COALESCE(SUM(${expenses.totalAmount}), 0)`,
@@ -30,7 +28,6 @@ export async function GET(request: Request) {
       .from(expenses)
       .where(sql`${expenses.date} >= ${dateFrom} AND ${expenses.date} <= ${dateTo}`);
 
-    // Salary totals
     const salaryTotals = await db
       .select({
         total: sql<number>`COALESCE(SUM(${salaryPayments.netSalary}), 0)`,
@@ -40,7 +37,6 @@ export async function GET(request: Request) {
       .from(salaryPayments)
       .where(sql`${salaryPayments.paymentDate} >= ${dateFrom} AND ${salaryPayments.paymentDate} <= ${dateTo}`);
 
-    // Bonus totals
     const bonusTotals = await db
       .select({
         total: sql<number>`COALESCE(SUM(${bonuses.amount}), 0)`,
@@ -48,52 +44,48 @@ export async function GET(request: Request) {
       .from(bonuses)
       .where(sql`${bonuses.date} >= ${dateFrom} AND ${bonuses.date} <= ${dateTo}`);
 
-    // Income by category
     const incByCategory = await db
       .select({
-        category: sql<string>`COALESCE(c.name, 'سایر')`,
+        category: sql<string>`COALESCE(${categories.name}, 'سایر')`,
         total: sql<number>`COALESCE(SUM(${income.totalAmount}), 0)`,
       })
       .from(income)
-      .leftJoin(sql`categories c`, sql`c.id = ${income.categoryId}`)
+      .leftJoin(categories, eq(income.categoryId, categories.id))
       .where(sql`${income.date} >= ${dateFrom} AND ${income.date} <= ${dateTo}`)
-      .groupBy(sql`c.name`);
+      .groupBy(categories.name);
 
-    // Expense by category
     const expByCategory = await db
       .select({
-        category: sql<string>`COALESCE(c.name, 'سایر')`,
+        category: sql<string>`COALESCE(${categories.name}, 'سایر')`,
         total: sql<number>`COALESCE(SUM(${expenses.totalAmount}), 0)`,
       })
       .from(expenses)
-      .leftJoin(sql`categories c`, sql`c.id = ${expenses.categoryId}`)
+      .leftJoin(categories, eq(expenses.categoryId, categories.id))
       .where(sql`${expenses.date} >= ${dateFrom} AND ${expenses.date} <= ${dateTo}`)
-      .groupBy(sql`c.name`);
+      .groupBy(categories.name);
 
-    // Top paid employees
     const topEmployees = await db
       .select({
-        name: sql<string>`e.first_name || ' ' || e.last_name`,
-        department: sql<string>`e.department`,
+        name: sql<string>`${employees.firstName} || ' ' || ${employees.lastName}`,
+        department: employees.department,
         totalPaid: sql<number>`COALESCE(SUM(${salaryPayments.netSalary}), 0)`,
       })
       .from(salaryPayments)
-      .leftJoin(sql`employees e`, sql`e.id = ${salaryPayments.employeeId}`)
+      .leftJoin(employees, eq(salaryPayments.employeeId, employees.id))
       .where(sql`${salaryPayments.paymentDate} >= ${dateFrom} AND ${salaryPayments.paymentDate} <= ${dateTo}`)
-      .groupBy(sql`e.first_name, e.last_name, e.department`)
+      .groupBy(employees.firstName, employees.lastName, employees.department)
       .orderBy(sql`SUM(${salaryPayments.netSalary}) DESC`)
       .limit(5);
 
-    // Department expense summary
     const deptExpense = await db
       .select({
-        department: sql<string>`COALESCE(e.department, 'نامشخص')`,
+        department: sql<string>`COALESCE(${employees.department}, 'نامشخص')`,
         total: sql<number>`COALESCE(SUM(${salaryPayments.netSalary}), 0)`,
       })
       .from(salaryPayments)
-      .leftJoin(sql`employees e`, sql`e.id = ${salaryPayments.employeeId}`)
+      .leftJoin(employees, eq(salaryPayments.employeeId, employees.id))
       .where(sql`${salaryPayments.paymentDate} >= ${dateFrom} AND ${salaryPayments.paymentDate} <= ${dateTo}`)
-      .groupBy(sql`e.department`);
+      .groupBy(employees.department);
 
     const totalIncVal = Number(totalInc[0]?.total || 0);
     const totalExpVal = Number(totalExp[0]?.total || 0);

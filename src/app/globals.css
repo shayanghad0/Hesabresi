@@ -61,7 +61,8 @@ input, textarea, select {
   color: #9ca3af;
 }
 
-input[type="number"] {
+input[type="number"],
+input[type="date"] {
   direction: ltr;
   text-align: right;
 }

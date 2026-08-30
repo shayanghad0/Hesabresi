@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback, type ReactNode, type FormEvent } from "react";
 import { useTheme } from "@/providers/ThemeProvider";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 // ============================================================
 // Types
@@ -1743,23 +1745,97 @@ function ReportsPage() {
   const [loading, setLoading] = useState(false);
   const [dateFrom, setDateFrom] = useState("2024-01-01");
   const [dateTo, setDateTo] = useState("2024-12-31");
+  const [msg, setMsg] = useState("");
 
   const loadReport = async () => {
     setLoading(true);
-    const res = await fetch(`/api/reports?dateFrom=${dateFrom}&dateTo=${dateTo}`);
-    const d = await res.json();
-    setData(d);
-    setLoading(false);
+    setMsg("");
+    try {
+      const res = await fetch(`/api/reports?dateFrom=${dateFrom}&dateTo=${dateTo}`);
+      const d = await res.json();
+      if (d.error) {
+        setMsg("خطا: " + d.error);
+      } else {
+        setData(d);
+        setMsg("گزارش با موفقیت بارگذاری شد");
+      }
+    } catch {
+      setMsg("خطا در اتصال به سرور");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { loadReport(); }, []);
 
-  if (loading) return <Spinner />;
-  if (!data) return <div className="text-center py-8"><Button onClick={loadReport}>بارگذاری گزارش</Button></div>;
+  const exportPDF = () => {
+    if (!data) return;
+    const doc = new jsPDF({ orientation: "p", unit: "mm", format: "a4" });
+    doc.setFont("helvetica");
 
-  const s = data.summary;
-  const profitPercent = s.totalIncome > 0 ? Math.round((s.netProfit / s.totalIncome) * 100) : 0;
-  const salaryPercent = s.totalExpense > 0 ? Math.round((s.totalSalaryPaid / s.totalExpense) * 100) : 0;
+    doc.setFontSize(18);
+    doc.text("Financial Report", 14, 20);
+    doc.setFontSize(10);
+    doc.text(`Date Range: ${dateFrom} - ${dateTo}`, 14, 28);
+
+    const s = data.summary;
+    doc.setFontSize(12);
+    doc.text("Summary", 14, 40);
+    autoTable(doc, {
+      startY: 44,
+      head: [["Metric", "Value (IRR)"]],
+      body: [
+        ["Total Income", s.totalIncome.toLocaleString()],
+        ["Total Expense", s.totalExpense.toLocaleString()],
+        ["Net Profit", s.netProfit.toLocaleString()],
+        ["Total Tax", s.totalTax.toLocaleString()],
+        ["Salary Paid", s.totalSalaryPaid.toLocaleString()],
+        ["Bonuses", s.totalBonuses.toLocaleString()],
+      ],
+      theme: "grid",
+    });
+
+    const y1 = (doc as any).lastAutoTable.finalY + 14;
+    doc.setFontSize(12);
+    doc.text("Expense by Category", 14, y1);
+    autoTable(doc, {
+      startY: y1 + 4,
+      head: [["Category", "Amount (IRR)"]],
+      body: data.expenseByCategory.map((c) => [c.name, c.value.toLocaleString()]),
+      theme: "grid",
+    });
+
+    const y2 = (doc as any).lastAutoTable.finalY + 14;
+    doc.setFontSize(12);
+    doc.text("Income by Category", 14, y2);
+    autoTable(doc, {
+      startY: y2 + 4,
+      head: [["Category", "Amount (IRR)"]],
+      body: data.incomeByCategory.map((c) => [c.name, c.value.toLocaleString()]),
+      theme: "grid",
+    });
+
+    const y3 = (doc as any).lastAutoTable.finalY + 14;
+    doc.setFontSize(12);
+    doc.text("Top Employees", 14, y3);
+    autoTable(doc, {
+      startY: y3 + 4,
+      head: [["#", "Name", "Department", "Total Paid (IRR)"]],
+      body: data.topEmployees.map((e, i) => [
+        String(i + 1),
+        e.name,
+        e.department,
+        e.totalPaid.toLocaleString(),
+      ]),
+      theme: "grid",
+    });
+
+    doc.save(`report_${dateFrom}_${dateTo}.pdf`);
+  };
+
+  const s = data?.summary;
+  const profitPercent = s && s.totalIncome > 0 ? Math.round((s.netProfit / s.totalIncome) * 100) : 0;
+  const salaryPercent = s && s.totalExpense > 0 ? Math.round((s.totalSalaryPaid / s.totalExpense) * 100) : 0;
 
   return (
     <div className="space-y-6">
@@ -1767,9 +1843,25 @@ function ReportsPage() {
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 flex flex-wrap gap-3 items-end">
         <Input label="از تاریخ" type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
         <Input label="تا تاریخ" type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
-        <Button onClick={loadReport}>تولید گزارش</Button>
+        <Button onClick={() => loadReport()} disabled={loading}>
+          {loading ? "در حال بارگذاری..." : "تولید گزارش"}
+        </Button>
+        {data && (
+          <Button variant="success" onClick={exportPDF} disabled={loading}>
+            خروجی PDF
+          </Button>
+        )}
       </div>
 
+      {msg && (
+        <div className={`text-sm px-4 py-2 rounded-lg ${msg.includes("خطا") ? "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300" : "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300"}`}>
+          {msg}
+        </div>
+      )}
+
+      {!data && loading && <Spinner />}
+
+      {s && (<>
       {/* Summary */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         <StatCard title="کل درآمد" value={formatCurrency(s.totalIncome)} icon="💰" color="green" />
@@ -1837,6 +1929,7 @@ function ReportsPage() {
           </div>
         </div>
       </div>
+      </>)}
     </div>
   );
 }
