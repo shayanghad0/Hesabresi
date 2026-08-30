@@ -2,3 +2,5 @@ node_modules
 .next
 hesabresi.db
 .env.local
+*.md
+*
