@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "next dev -p 4712",
     "build": "next build",
+    "db": "drizzle-kit push --force && npx tsx src/db/seed.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },
