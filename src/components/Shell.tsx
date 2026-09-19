@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, type ReactNode, type FormEvent } from "react";
+import { useState, useEffect, useRef, type ReactNode, type FormEvent } from "react";
 import { useTheme } from "@/providers/ThemeProvider";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -138,9 +138,35 @@ export default function Shell({ children }: { children: ReactNode }) {
         </header>
 
         <div className="p-4 lg:p-6">
-          {children}
+          <PageTransition>{children}</PageTransition>
         </div>
       </main>
+    </div>
+  );
+}
+
+function PageTransition({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const [animating, setAnimating] = useState(true);
+  const prevPathRef = useRef(pathname);
+
+  useEffect(() => {
+    prevPathRef.current = pathname;
+  }, [pathname]);
+
+  useEffect(() => {
+    if (prevPathRef.current !== pathname) {
+      setAnimating(true);
+      prevPathRef.current = pathname;
+    }
+  }, [pathname]);
+
+  return (
+    <div
+      className={animating ? "page-transition-enter" : ""}
+      onAnimationEnd={() => setAnimating(false)}
+    >
+      {children}
     </div>
   );
 }
