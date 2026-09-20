@@ -6,6 +6,10 @@ import { ThemeProvider } from "@/providers/ThemeProvider";
 export const metadata: Metadata = {
   title: "سامانه مدیریت مالی",
   description: "سیستم جامع حسابداری و مدیریت مالی شرکت",
+  icons: {
+    icon: "/favicon.svg",
+    apple: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

@@ -6,6 +6,20 @@ import Link from "next/link";
 import { toJalali } from "@/lib/utils";
 import type { SessionUser } from "@/lib/auth";
 import Spinner from "./Spinner";
+import {
+  ChartBarIcon,
+  WalletIcon,
+  MoneyFlyIcon,
+  UsersIcon,
+  BankIcon,
+  GiftIcon,
+  FolderIcon,
+  SettingsIcon,
+  SunIcon,
+  MoonIcon,
+  MenuIcon,
+  LogoIcon,
+} from "./Icons";
 
 type Page =
   | "dashboard"
@@ -18,16 +32,16 @@ type Page =
   | "reports"
   | "settings";
 
-const MENU_ITEMS: { key: Page; label: string; icon: string; path: string }[] = [
-  { key: "dashboard", label: "داشبورد", icon: "📊", path: "/dashboard" },
-  { key: "income", label: "درآمدها", icon: "💰", path: "/income" },
-  { key: "expenses", label: "هزینه‌ها", icon: "💸", path: "/cost" },
-  { key: "employees", label: "کارکنان", icon: "👥", path: "/employees" },
-  { key: "salary", label: "حقوق و دستمزد", icon: "🏦", path: "/wages" },
-  { key: "bonuses", label: "پاداش‌ها", icon: "🎁", path: "/remuneration" },
-  { key: "categories", label: "دسته‌بندی‌ها", icon: "📁", path: "/categories" },
-  { key: "reports", label: "گزارشات", icon: "📈", path: "/reports" },
-  { key: "settings", label: "تنظیمات", icon: "⚙️", path: "/settings" },
+const MENU_ITEMS: { key: Page; label: string; icon: ReactNode; path: string }[] = [
+  { key: "dashboard", label: "داشبورد", icon: <ChartBarIcon size={18} /> , path: "/dashboard" },
+  { key: "income", label: "درآمدها", icon: <WalletIcon size={18} /> , path: "/income" },
+  { key: "expenses", label: "هزینهها", icon: <MoneyFlyIcon size={18} /> , path: "/cost" },
+  { key: "employees", label: "کارکنان", icon: <UsersIcon size={18} /> , path: "/employees" },
+  { key: "salary", label: "حقوق و دستمزد", icon: <BankIcon size={18} /> , path: "/wages" },
+  { key: "bonuses", label: "پاداشها", icon: <GiftIcon size={18} /> , path: "/remuneration" },
+  { key: "categories", label: "دستهبندیها", icon: <FolderIcon size={18} /> , path: "/categories" },
+  { key: "reports", label: "گزارشات", icon: <ChartBarIcon size={18} /> , path: "/reports" },
+  { key: "settings", label: "تنظیمات", icon: <SettingsIcon size={18} /> , path: "/settings" },
 ];
 
 export default function Shell({ children }: { children: ReactNode }) {
@@ -73,8 +87,13 @@ export default function Shell({ children }: { children: ReactNode }) {
       >
         <div className="h-full flex flex-col">
           <div className="p-5 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-l from-blue-600 to-blue-700">
-            <h1 className="text-white font-bold text-lg">سامانه مالی</h1>
-            <p className="text-blue-200 text-xs mt-1">مدیریت مالی شرکت</p>
+            <div className="flex items-center gap-2.5">
+              <LogoIcon size={24} className="text-white shrink-0" />
+              <div>
+                <h1 className="text-white font-bold text-lg">سامانه مالی</h1>
+                <p className="text-blue-200 text-xs mt-0.5">مدیریت مالی شرکت</p>
+              </div>
+            </div>
           </div>
 
           <nav className="flex-1 py-3 overflow-y-auto">
@@ -89,7 +108,7 @@ export default function Shell({ children }: { children: ReactNode }) {
                     : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
                 }`}
               >
-                <span className="text-lg">{item.icon}</span>
+                <span className="shrink-0 text-blue-600 dark:text-blue-400">{item.icon}</span>
                 <span>{item.label}</span>
               </Link>
             ))}
@@ -121,17 +140,17 @@ export default function Shell({ children }: { children: ReactNode }) {
       <main className="flex-1 overflow-y-auto dark:bg-gray-900">
         <header className="no-print bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-5 py-3 flex items-center justify-between sticky top-0 z-30">
           <button
-            className="lg:hidden text-gray-600 dark:text-gray-300 text-2xl"
+            className="lg:hidden text-gray-600 dark:text-gray-300"
             onClick={() => setSidebarOpen(true)}
           >
-            ☰
+            <MenuIcon size={22} />
           </button>
           <h2 className="text-lg font-bold text-gray-800 dark:text-white">
             {MENU_ITEMS.find((m) => m.key === currentPage)?.label || ""}
           </h2>
           <div className="flex items-center gap-3">
-            <button onClick={toggleTheme} className="text-gray-600 dark:text-gray-300 text-xl hover:scale-110 transition" aria-label="تغییر تم">
-              {theme === "light" ? "🌙" : "☀️"}
+            <button onClick={toggleTheme} className="text-gray-600 dark:text-gray-300 hover:scale-110 transition" aria-label="تغییر تم">
+              {theme === "light" ? <MoonIcon size={18} /> : <SunIcon size={18} />}
             </button>
             <div className="text-sm text-gray-500 dark:text-gray-400">{toJalali(new Date())}</div>
           </div>
@@ -206,7 +225,7 @@ function LoginPageInline({ onLogin }: { onLogin: (u: SessionUser) => void }) {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl mb-4">
-            <span className="text-3xl">💰</span>
+            <LogoIcon size={32} className="text-white" />
           </div>
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white">سامانه مالی</h1>
           <p className="text-gray-500 dark:text-gray-400 mt-2">ورود به سیستم مدیریت مالی</p>
